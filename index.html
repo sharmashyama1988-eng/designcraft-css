@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DesignCraft CSS - Canva-style CSS Maker</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/logodark.png">
+    <link rel="apple-touch-icon" href="assets/logodark.png">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- App Shell Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Canvas Inner Styles -->
+    <link id="canvas-styles" rel="stylesheet" href="canvas.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="dark-theme">
+    <!-- Mobile/Phone Block Overlay -->
+    <div class="mobile-block-overlay">
+        <div class="mobile-block-box">
+            <svg viewBox="0 0 24 24" width="48" height="48" style="margin-bottom: 20px; color: var(--accent-color);">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/>
+                <line x1="8" y1="21" x2="16" y2="21" stroke="currentColor" stroke-width="2"/>
+                <line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <h2>Desktop Workspace Required</h2>
+            <p style="margin: 15px 0; font-size: 14px; line-height: 1.6; color: var(--text-muted);">DesignCraft is a professional, high-fidelity design framework optimized for precise canvas manipulation, dragging, and AI landing page orchestration.</p>
+            <p style="font-size: 13px; color: var(--accent-color); font-weight: 600;">Please load this workspace on a desktop browser to begin.</p>
+        </div>
+    </div>
+    <!-- Top Navbar -->
+    <header class="navbar">
+        <div class="navbar-brand">
+            <div class="brand-logo-circle">
+                <img src="assets/logodark.png" alt="DesignCraft Logo" class="brand-logo-img">
+            </div>
+            <span class="brand-name">DesignCraft<span class="brand-suffix">CSS</span></span>
+        </div>
+
+        <div class="navbar-tools">
+            <div class="tool-group">
+                <button class="nav-btn" id="tool-select" title="Select Element (V)" data-active="true">
+                    <i data-lucide="mouse-pointer"></i>
+                </button>
+                <button class="nav-btn" id="tool-text" title="Add Text (T)">
+                    <i data-lucide="type"></i>
+                </button>
+                <div class="dropdown-wrapper">
+                    <button class="nav-btn dropdown-trigger" id="tool-shape" title="Add Shape">
+                        <i data-lucide="shapes"></i>
+                        <i data-lucide="chevron-down" class="chevron"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <button class="shape-option" data-shape="rectangle">
+                            <i data-lucide="square"></i> Rectangle
+                        </button>
+                        <button class="shape-option" data-shape="circle">
+                            <i data-lucide="circle"></i> Circle
+                        </button>
+                        <button class="shape-option" data-shape="triangle">
+                            <i data-lucide="triangle"></i> Triangle
+                        </button>
+                        <button class="shape-option" data-shape="star">
+                            <i data-lucide="star"></i> Star Shape
+                        </button>
+                        <button class="shape-option" data-shape="blob">
+                            <i data-lucide="sparkles"></i> Organic Blob
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="tool-group">
+                <button class="nav-btn" id="action-undo" title="Undo (Ctrl+Z)">
+                    <i data-lucide="undo-2"></i>
+                </button>
+                <button class="nav-btn" id="action-redo" title="Redo (Ctrl+Y)">
+                    <i data-lucide="redo-2"></i>
+                </button>
+                <button class="nav-btn" id="action-clear" title="Clear Canvas">
+                    <i data-lucide="trash-2"></i>
+                </button>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="tool-group zoom-group">
+                <button class="nav-btn" id="zoom-out" title="Zoom Out">
+                    <i data-lucide="minus"></i>
+                </button>
+                <span id="zoom-percent">100%</span>
+                <button class="nav-btn" id="zoom-in" title="Zoom In">
+                    <i data-lucide="plus"></i>
+                </button>
+            </div>
+            
+            <div class="divider"></div>
+
+            <div class="tool-group layer-order-group">
+                <button class="nav-btn" id="order-to-front" title="Bring to Front">
+                    <i data-lucide="chevrons-up"></i>
+                </button>
+                <button class="nav-btn" id="order-forward" title="Bring Forward">
+                    <i data-lucide="chevron-up"></i>
+                </button>
+                <button class="nav-btn" id="order-backward" title="Send Backward">
+                    <i data-lucide="chevron-down"></i>
+                </button>
+                <button class="nav-btn" id="order-to-back" title="Send to Back">
+                    <i data-lucide="chevrons-down"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="navbar-actions">
+            <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">
+                <i data-lucide="sun" class="sun-icon"></i>
+                <i data-lucide="moon" class="moon-icon"></i>
+            </button>
+            <button class="btn btn-secondary" id="btn-save-project" title="Save current project to Firebase/LocalStorage">
+                <i data-lucide="save"></i> Save
+            </button>
+            <button class="btn btn-secondary" id="btn-open-projects" title="Open saved designs">
+                <i data-lucide="folder-open"></i> Designs
+            </button>
+            <button class="btn btn-secondary" id="btn-login-trigger">
+                <i data-lucide="log-in"></i> Sign In
+            </button>
+            <div class="user-profile-badge hidden" id="user-profile-badge">
+                <span class="user-avatar" id="user-avatar-initials">U</span>
+                <div class="profile-dropdown">
+                    <div class="profile-dropdown-info">
+                        <p class="profile-name" id="profile-display-name">DesignCraft User</p>
+                        <p class="profile-email" id="profile-display-email">user@designcraft.com</p>
+                    </div>
+                    <div class="profile-dropdown-divider"></div>
+                    <button class="profile-dropdown-item" id="btn-open-firebase-config">
+                        <i data-lucide="settings"></i> Firebase Setup
+                    </button>
+                    <button class="profile-dropdown-item logout" id="btn-logout">
+                        <i data-lucide="log-out"></i> Log Out
+                    </button>
+                </div>
+            </div>
+            <button class="btn btn-primary" id="btn-export">
+                <i data-lucide="code-2"></i> Export
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="workspace-container">
+        <!-- Sidebar Left (AI Assistant & Property Inspector) -->
+        <aside class="sidebar-left">
+            <div class="sidebar-tabs">
+                <button class="tab-btn active" data-tab="ai-panel">
+                    <i data-lucide="sparkles"></i> AI Designer
+                </button>
+                <button class="tab-btn" data-tab="inspector-panel">
+                    <i data-lucide="sliders"></i> Style Editor
+                </button>
+            </div>
+
+            <div class="tab-contents">
+                <!-- AI Designer Tab -->
+                <div class="tab-content active" id="ai-panel">
+                    <div class="ai-header">
+                        <h3>AI Prompt Designer</h3>
+                        <p>Generate outstanding CSS elements instantly using AI.</p>
+                    </div>
+
+                    <!-- API Key Configuration (Collapsible) -->
+                    <details class="api-details">
+                        <summary>AI Models & API Configuration</summary>
+                        <div class="api-key-box">
+                            <label for="api-key">OpenRouter API Key</label>
+                            <input type="password" id="api-key" value="" placeholder="sk-or-v1-... (OpenRouter API Key)">
+                            <label for="gemini-key">Gemini API Key</label>
+                            <input type="password" id="gemini-key" value="" placeholder="AIza... (Gemini API Key)">
+                            <label for="ai-model">Refiner Model (OpenRouter)</label>
+                            <select id="ai-model">
+                                <option value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B (Recommended)</option>
+                                <option value="google/gemini-2.5-flash">Gemini 2.5 Flash</option>
+                                <option value="deepseek/deepseek-chat">DeepSeek V3</option>
+                            </select>
+                        </div>
+                    </details>
+
+                    <!-- Prompt Area -->
+                    <div class="prompt-container">
+                        <!-- AI Creation Mode Selector (Figma Grade) -->
+                        <div class="creation-mode-selector" style="display: flex; gap: 4px; margin-bottom: 12px; background: rgba(0,0,0,0.2); padding: 3px; border-radius: var(--border-radius-sm); border: 1px solid var(--panel-border);">
+                            <button class="creation-mode-btn active" data-mode="landing" style="flex: 1; padding: 6px 10px; font-size: 11px; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; transition: all 0.15s ease; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                                <i data-lucide="layout" style="width: 12px; height: 12px;"></i> Landing Page
+                            </button>
+                            <button class="creation-mode-btn" data-mode="asset" style="flex: 1; padding: 6px 10px; font-size: 11px; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; transition: all 0.15s ease; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                                <i data-lucide="component" style="width: 12px; height: 12px;"></i> Asset Component
+                            </button>
+                        </div>
+                        <textarea id="ai-prompt" placeholder="Ask AI to design something...&#10;e.g., 'Make a glassmorphic login card with glowing purple borders and hover float effect'"></textarea>
+                        <button class="btn btn-accent btn-full" id="btn-generate-ai">
+                            <i data-lucide="wand-2"></i> Generate Element
+                        </button>
+                        <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="ai-lock-style" style="cursor: pointer; width: 14px; height: 14px; accent-color: var(--accent-color);">
+                                <label for="ai-lock-style" style="cursor: pointer; font-size: 11px; font-weight: 600; color: var(--accent-color); display: flex; align-items: center; gap: 4px; user-select: none;">
+                                    <i data-lucide="lock" style="width: 12px; height: 12px;"></i> Lock Current Design Style & Colors
+                                </label>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="ai-enable-animations" checked style="cursor: pointer; width: 14px; height: 14px; accent-color: var(--accent-color);">
+                                <label for="ai-enable-animations" style="cursor: pointer; font-size: 11px; font-weight: 600; color: var(--accent-color); display: flex; align-items: center; gap: 4px; user-select: none;">
+                                    <i data-lucide="play" style="width: 12px; height: 12px;"></i> Enable Animations & Hover Effects
+                                </label>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="ai-enable-tilt" style="cursor: pointer; width: 14px; height: 14px; accent-color: var(--accent-color);">
+                                <label for="ai-enable-tilt" style="cursor: pointer; font-size: 11px; font-weight: 600; color: var(--accent-color); display: flex; align-items: center; gap: 4px; user-select: none;">
+                                    <i data-lucide="rotate-3d" style="width: 12px; height: 12px;"></i> Enable 3D Tilt Hover Effects
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Status / Feedback -->
+                    <div id="ai-status" class="ai-status hidden">
+                        <div class="spinner"></div>
+                        <span id="ai-status-text">Thinking...</span>
+                    </div>
+
+                    <!-- Applied Code View -->
+                    <div class="code-preview-box">
+                        <div class="code-preview-header" style="padding: 0; display: flex; align-items: stretch; justify-content: space-between; height: 38px;">
+                            <div class="code-tab-selectors" style="display: flex; height: 100%;">
+                                <button class="code-tab active" id="tab-selector-css" style="background: transparent; border: none; color: var(--text-primary); padding: 0 16px; font-size: 11px; font-weight: 600; text-transform: uppercase; cursor: pointer; border-bottom: 2px solid var(--accent-color); transition: all 0.2s ease;">CSS</button>
+                                <button class="code-tab" id="tab-selector-html" style="background: transparent; border: none; color: var(--text-muted); padding: 0 16px; font-size: 11px; font-weight: 600; text-transform: uppercase; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s ease;">HTML</button>
+                            </div>
+                            <button id="btn-copy-generated" title="Copy active code" style="background: transparent; border: none; color: var(--text-muted); padding: 0 16px; cursor: pointer; transition: color 0.15s ease;">
+                                <i data-lucide="copy" style="width: 14px; height: 14px;"></i>
+                            </button>
+                        </div>
+                        <pre id="pre-generated-css"><code id="generated-css-code">/* CSS properties will appear here after AI generation */</code></pre>
+                        <pre id="pre-generated-html" class="hidden"><code id="generated-html-code">&lt;!-- HTML markup will appear here after AI generation --&gt;</code></pre>
+                    </div>
+                </div>
+
+                <!-- Style Editor Tab -->
+                <div class="tab-content" id="inspector-panel">
+                    <div class="no-selection-message" id="editor-no-selection">
+                        <i data-lucide="info"></i>
+                        <p>Select an element on the canvas to configure its styles manually.</p>
+                    </div>
+
+                    <div class="inspector-controls hidden" id="editor-controls">
+                        <!-- Dimensions -->
+                        <div class="control-section">
+                            <h4>Size & Layout</h4>
+                            <div class="control-grid">
+                                <div class="control-item">
+                                    <label>Width (px)</label>
+                                    <input type="number" id="prop-width" min="10" max="2000">
+                                </div>
+                                <div class="control-item">
+                                    <label>Height (px)</label>
+                                    <input type="number" id="prop-height" min="10" max="2000">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Typography (shows only when text is selected) -->
+                        <div class="control-section" id="section-typography">
+                            <h4>Typography</h4>
+                            <div class="control-item">
+                                <label>Font Family</label>
+                                <select id="prop-font-family">
+                                    <option value="'Inter', sans-serif">Inter</option>
+                                    <option value="'Outfit', sans-serif">Outfit</option>
+                                    <option value="'Fira Code', monospace">Fira Code</option>
+                                    <option value="Arial, sans-serif">Arial</option>
+                                    <option value="'Times New Roman', serif">Times New Roman</option>
+                                </select>
+                            </div>
+                            <div class="control-grid">
+                                <div class="control-item">
+                                    <label>Font Size</label>
+                                    <input type="number" id="prop-font-size" min="8" max="150">
+                                </div>
+                                <div class="control-item">
+                                    <label>Weight</label>
+                                    <select id="prop-font-weight">
+                                        <option value="300">Light</option>
+                                        <option value="400">Regular</option>
+                                        <option value="500">Medium</option>
+                                        <option value="600">Semi Bold</option>
+                                        <option value="700">Bold</option>
+                                        <option value="800">Extra Bold</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="control-grid">
+                                <div class="control-item">
+                                    <label>Color</label>
+                                    <div class="color-picker-input">
+                                        <input type="color" id="prop-text-color">
+                                        <input type="text" id="prop-text-color-hex" placeholder="#ffffff">
+                                    </div>
+                                </div>
+                                <div class="control-item">
+                                    <label>Text Align</label>
+                                    <select id="prop-text-align">
+                                        <option value="left">Left</option>
+                                        <option value="center">Center</option>
+                                        <option value="right">Right</option>
+                                        <option value="justify">Justify</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Background -->
+                        <div class="control-section">
+                            <h4>Background</h4>
+                            <div class="control-item">
+                                <label>Background Type</label>
+                                <select id="prop-bg-type">
+                                    <option value="color">Solid Color</option>
+                                    <option value="gradient">Gradient</option>
+                                    <option value="transparent">Transparent</option>
+                                </select>
+                            </div>
+
+                            <!-- Solid Background Control -->
+                            <div class="control-item" id="bg-color-control">
+                                <label>Background Color</label>
+                                <div class="color-picker-input">
+                                    <input type="color" id="prop-bg-color">
+                                    <input type="text" id="prop-bg-color-hex" placeholder="#ffffff">
+                                </div>
+                                <div class="control-item" style="margin-top: 10px;">
+                                    <label>Opacity</label>
+                                    <input type="range" id="prop-bg-opacity" min="0" max="1" step="0.05" value="1">
+                                </div>
+                            </div>
+
+                            <!-- Gradient Control -->
+                            <div class="control-item hidden" id="bg-gradient-control">
+                                <div class="control-grid">
+                                    <div class="control-item">
+                                        <label>Grad Angle (deg)</label>
+                                        <input type="number" id="prop-grad-angle" value="135" min="0" max="360">
+                                    </div>
+                                    <div class="control-item">
+                                        <label>Type</label>
+                                        <select id="prop-grad-type">
+                                            <option value="linear">Linear</option>
+                                            <option value="radial">Radial</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="control-grid" style="margin-top: 10px;">
+                                    <div class="control-item">
+                                        <label>Color 1</label>
+                                        <input type="color" id="prop-grad-color1" value="#6366f1">
+                                    </div>
+                                    <div class="control-item">
+                                        <label>Color 2</label>
+                                        <input type="color" id="prop-grad-color2" value="#a855f7">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Corners & Borders -->
+                        <div class="control-section">
+                            <h4>Corners & Borders</h4>
+                            <div class="control-item">
+                                <label>Border Radius (px): <span id="radius-val">0</span></label>
+                                <input type="range" id="prop-border-radius" min="0" max="150" value="0">
+                            </div>
+                            <div class="control-grid">
+                                <div class="control-item">
+                                    <label>Border Width</label>
+                                    <input type="number" id="prop-border-width" min="0" max="30" value="0">
+                                </div>
+                                <div class="control-item">
+                                    <label>Border Style</label>
+                                    <select id="prop-border-style">
+                                        <option value="none">None</option>
+                                        <option value="solid">Solid</option>
+                                        <option value="dashed">Dashed</option>
+                                        <option value="dotted">Dotted</option>
+                                        <option value="double">Double</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="control-item" id="border-color-container" style="margin-top: 10px;">
+                                <label>Border Color</label>
+                                <div class="color-picker-input">
+                                    <input type="color" id="prop-border-color" value="#000000">
+                                    <input type="text" id="prop-border-color-hex" placeholder="#000000">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Box Shadow -->
+                        <div class="control-section">
+                            <div class="section-title-action">
+                                <h4>Box Shadow</h4>
+                                <label class="switch">
+                                    <input type="checkbox" id="prop-shadow-enable">
+                                    <span class="slider-round"></span>
+                                </label>
+                            </div>
+                            <div id="shadow-properties-container" class="disabled-group">
+                                <div class="control-grid">
+                                    <div class="control-item">
+                                        <label>Offset X (px)</label>
+                                        <input type="number" id="prop-shadow-x" value="0">
+                                    </div>
+                                    <div class="control-item">
+                                        <label>Offset Y (px)</label>
+                                        <input type="number" id="prop-shadow-y" value="10">
+                                    </div>
+                                </div>
+                                <div class="control-grid" style="margin-top: 10px;">
+                                    <div class="control-item">
+                                        <label>Blur (px)</label>
+                                        <input type="number" id="prop-shadow-blur" value="20" min="0">
+                                    </div>
+                                    <div class="control-item">
+                                        <label>Spread (px)</label>
+                                        <input type="number" id="prop-shadow-spread" value="0">
+                                    </div>
+                                </div>
+                                <div class="control-grid" style="margin-top: 10px;">
+                                    <div class="control-item">
+                                        <label>Shadow Color</label>
+                                        <input type="color" id="prop-shadow-color" value="#000000">
+                                    </div>
+                                    <div class="control-item" style="display:flex; flex-direction:column; justify-content:center;">
+                                        <label style="display:flex; align-items:center; gap:5px; margin:0; cursor:pointer;">
+                                            <input type="checkbox" id="prop-shadow-inset"> Inset Shadow
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Transforms (Rotate, Scale, Skew) -->
+                        <div class="control-section">
+                            <h4>Transforms (3D & 2D)</h4>
+                            <div class="control-item">
+                                <label>Rotation: <span id="rotate-val">0</span>°</label>
+                                <input type="range" id="prop-rotate" min="0" max="360" value="0">
+                            </div>
+                            <div class="control-grid">
+                                <div class="control-item">
+                                    <label>Scale</label>
+                                    <input type="number" id="prop-scale" value="1" step="0.1" min="0.1" max="5">
+                                </div>
+                                <div class="control-item">
+                                    <label>Skew X (deg)</label>
+                                    <input type="number" id="prop-skew-x" value="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Effects & Filters -->
+                        <div class="control-section">
+                            <h4>Filters & Effects</h4>
+                            <div class="control-grid">
+                                <div class="control-item">
+                                    <label>Blur (px)</label>
+                                    <input type="number" id="prop-filter-blur" value="0" min="0">
+                                </div>
+                                <div class="control-item">
+                                    <label>Brightness (%)</label>
+                                    <input type="number" id="prop-filter-brightness" value="100" min="0">
+                                </div>
+                            </div>
+                            <div class="control-item" style="margin-top: 10px;">
+                                <label>Backdrop Blur (px) <small>(Glassmorphic)</small></label>
+                                <input type="number" id="prop-backdrop-blur" value="0" min="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Central Work Area -->
+        <section class="canvas-workspace">
+            <!-- Canvas Ruler & Margins Grid -->
+            <div class="artboard-wrapper" id="artboard-wrapper">
+                <div class="artboard" id="paint-artboard" style="width: 1000px; height: 650px; background-color: #121216;">
+                    <!-- Snap Guides -->
+                    <div class="guide-line guide-x hidden" id="guide-x"></div>
+                    <div class="guide-line guide-y hidden" id="guide-y"></div>
+                    <!-- Selection Bounds Box (rendered dynamically over selected element) -->
+                    <div class="selection-overlay hidden" id="selection-box">
+                        <div class="resize-handle top-left" data-handle="tl"></div>
+                        <div class="resize-handle top-center" data-handle="tc"></div>
+                        <div class="resize-handle top-right" data-handle="tr"></div>
+                        <div class="resize-handle middle-right" data-handle="mr"></div>
+                        <div class="resize-handle bottom-right" data-handle="br"></div>
+                        <div class="resize-handle bottom-center" data-handle="bc"></div>
+                        <div class="resize-handle bottom-left" data-handle="bl"></div>
+                        <div class="resize-handle middle-left" data-handle="ml"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="canvas-status">
+                <span id="element-coord">X: 0, Y: 0</span>
+                <span id="canvas-elements-count">0 Elements</span>
+            </div>
+        </section>
+
+        <!-- Sidebar Right (Layers & Built-in Library) -->
+        <aside class="sidebar-right">
+            <div class="sidebar-tabs">
+                <button class="tab-btn active" data-tab="presets-panel">
+                    <i data-lucide="layers"></i> Assets & Presets
+                </button>
+                <button class="tab-btn" data-tab="layers-panel">
+                    <i data-lucide="list"></i> Layers
+                </button>
+            </div>
+
+            <div class="tab-contents">
+                <!-- Assets & Presets Tab -->
+                <div class="tab-content active" id="presets-panel">
+                    <!-- Artboard Settings -->
+                    <div class="presets-section">
+                        <h4>Artboard Settings</h4>
+                        <div class="control-item">
+                            <label>Artboard Background</label>
+                            <div class="color-picker-input">
+                                <input type="color" id="prop-canvas-bg" value="#121216">
+                                <input type="text" id="prop-canvas-bg-hex" value="#121216">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Built-in Effects Presets (Instant & Low Credit) -->
+                    <div class="presets-section">
+                        <h4>Stunning Style Presets</h4>
+                        <div class="swatches-tabs" id="preset-category-tabs" style="margin-bottom:12px; display:flex; flex-wrap:wrap; gap:4px;">
+                            <button class="preset-cat-btn active" data-cat="glass" style="flex:1; padding:4px 8px; font-size:10px; font-weight:600; border-radius:4px; cursor:pointer; background:rgba(255,255,255,0.03); border:1px solid var(--panel-border); color:var(--text-muted); transition:all 0.15s ease;">Glass</button>
+                            <button class="preset-cat-btn" data-cat="neumorphic" style="flex:1; padding:4px 8px; font-size:10px; font-weight:600; border-radius:4px; cursor:pointer; background:rgba(255,255,255,0.03); border:1px solid var(--panel-border); color:var(--text-muted); transition:all 0.15s ease;">Soft</button>
+                            <button class="preset-cat-btn" data-cat="cyber" style="flex:1; padding:4px 8px; font-size:10px; font-weight:600; border-radius:4px; cursor:pointer; background:rgba(255,255,255,0.03); border:1px solid var(--panel-border); color:var(--text-muted); transition:all 0.15s ease;">Cyber</button>
+                            <button class="preset-cat-btn" data-cat="minimal" style="flex:1; padding:4px 8px; font-size:10px; font-weight:600; border-radius:4px; cursor:pointer; background:rgba(255,255,255,0.03); border:1px solid var(--panel-border); color:var(--text-muted); transition:all 0.15s ease;">Minimal</button>
+                            <button class="preset-cat-btn" data-cat="aura" style="flex:1; padding:4px 8px; font-size:10px; font-weight:600; border-radius:4px; cursor:pointer; background:rgba(255,255,255,0.03); border:1px solid var(--panel-border); color:var(--text-muted); transition:all 0.15s ease;">Aura</button>
+                            <button class="preset-cat-btn" data-cat="brutalist" style="flex:1; padding:4px 8px; font-size:10px; font-weight:600; border-radius:4px; cursor:pointer; background:rgba(255,255,255,0.03); border:1px solid var(--panel-border); color:var(--text-muted); transition:all 0.15s ease;">Brutal</button>
+                        </div>
+                        <div class="preset-grid" id="presets-dynamic-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; max-height:220px; overflow-y:auto; padding-right:4px;">
+                            <!-- Rendered dynamically via js/generators.js -->
+                        </div>
+                    </div>
+
+                    <!-- Animations Panel -->
+                    <div class="presets-section">
+                        <h4>Animations Library</h4>
+                        <div class="animation-selector">
+                            <div class="control-item">
+                                <label>Select Animation</label>
+                                <select id="prop-animation-type">
+                                    <option value="none">No Animations & Effects</option>
+                                    <option value="pulse">Pulse (Scale Heartbeat)</option>
+                                    <option value="float">Hover Float (Y-Axis Glide)</option>
+                                    <option value="spin">Infinite Rotate</option>
+                                    <option value="neon-glow">Neon Glow Pulsing</option>
+                                    <option value="jelly">Jelly Scale (Squish)</option>
+                                    <option value="bounce">Bounce Up/Down</option>
+                                    <option value="rainbow-text">Rainbow Gradient Text</option>
+                                </select>
+                            </div>
+                            <div class="control-grid" style="margin-top: 10px;">
+                                <div class="control-item">
+                                    <label>Duration (s)</label>
+                                    <input type="number" id="prop-anim-duration" value="2" step="0.1" min="0.1">
+                                </div>
+                                <div class="control-item" style="display:flex; align-items:center; margin-top:20px;">
+                                    <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
+                                        <input type="checkbox" id="prop-anim-infinite" checked> Infinite
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Built-in Billions of Colors Swatches -->
+                    <div class="presets-section">
+                        <h4>Stunning Color Swatches</h4>
+                        <div class="swatches-tabs">
+                            <button class="swatch-tab-btn active" data-swatch-cat="solid">Solids</button>
+                            <button class="swatch-tab-btn" data-swatch-cat="gradient">Gradients</button>
+                        </div>
+                        <div class="swatch-container active" id="swatches-solid">
+                            <!-- Premium Designer Palettes -->
+                            <div class="swatch-row-title">Designer Palettes (Figma Grade)</div>
+                            <div class="palette-list" style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+                                <div class="premium-palette-row" data-palette-hue="325" data-palette-bg="8" data-palette-text="96" data-palette-accent-h="190" style="display:flex; height:28px; border-radius:6px; overflow:hidden; border:1px solid var(--panel-border); cursor:pointer; transition:transform 0.15s ease;" title="Obsidian Cyber (Cyberpunk Magenta/Cyan)">
+                                    <div style="flex:1.5; background:hsl(325, 90%, 55%);"></div>
+                                    <div style="flex:1; background:hsl(190, 95%, 50%);"></div>
+                                    <div style="flex:1; background:hsl(325, 20%, 96%);"></div>
+                                    <div style="flex:1.2; background:hsl(325, 12%, 8%);"></div>
+                                </div>
+                                <div class="premium-palette-row" data-palette-hue="215" data-palette-bg="10" data-palette-text="95" data-palette-accent-h="160" style="display:flex; height:28px; border-radius:6px; overflow:hidden; border:1px solid var(--panel-border); cursor:pointer; transition:transform 0.15s ease;" title="Nordic Frost (Clean Minimal Blue/Mint)">
+                                    <div style="flex:1.5; background:hsl(215, 80%, 50%);"></div>
+                                    <div style="flex:1; background:hsl(160, 75%, 55%);"></div>
+                                    <div style="flex:1; background:hsl(215, 10%, 95%);"></div>
+                                    <div style="flex:1.2; background:hsl(215, 12%, 10%);"></div>
+                                </div>
+                                <div class="premium-palette-row" data-palette-hue="18" data-palette-bg="6" data-palette-text="97" data-palette-accent-h="345" style="display:flex; height:28px; border-radius:6px; overflow:hidden; border:1px solid var(--panel-border); cursor:pointer; transition:transform 0.15s ease;" title="Sunset Velvet (Warm Luxe Terracotta/Rose)">
+                                    <div style="flex:1.5; background:hsl(18, 85%, 55%);"></div>
+                                    <div style="flex:1; background:hsl(345, 85%, 55%);"></div>
+                                    <div style="flex:1; background:hsl(18, 20%, 97%);"></div>
+                                    <div style="flex:1.2; background:hsl(345, 15%, 6%);"></div>
+                                </div>
+                                <div class="premium-palette-row" data-palette-hue="340" data-palette-bg="94" data-palette-text="12" data-palette-accent-h="280" style="display:flex; height:28px; border-radius:6px; overflow:hidden; border:1px solid var(--panel-border); cursor:pointer; transition:transform 0.15s ease;" title="Sakura Glass (Soft Pastel Peach/Lilac)">
+                                    <div style="flex:1.5; background:hsl(340, 85%, 70%);"></div>
+                                    <div style="flex:1; background:hsl(280, 80%, 75%);"></div>
+                                    <div style="flex:1; background:hsl(340, 10%, 97%);"></div>
+                                    <div style="flex:1.2; background:hsl(340, 30%, 92%);"></div>
+                                </div>
+                            </div>
+
+                            <!-- Random HSL Palette Generator Button -->
+                            <button class="btn btn-secondary btn-full" id="btn-random-palette" style="margin-bottom: 16px; font-size: 11px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:6px; width: 100%;">
+                                <i data-lucide="sparkles"></i> Generate Random HSL Palette
+                            </button>
+
+                            <!-- Pastel Swatches -->
+                            <div class="swatch-row-title">Quick Solid Swatches</div>
+                            <div class="swatch-list">
+                                <div class="swatch-color" style="background-color: #ffb7b2;" data-color="#ffb7b2"></div>
+                                <div class="swatch-color" style="background-color: #ffdac1;" data-color="#ffdac1"></div>
+                                <div class="swatch-color" style="background-color: #e2f0cb;" data-color="#e2f0cb"></div>
+                                <div class="swatch-color" style="background-color: #b5ead7;" data-color="#b5ead7"></div>
+                                <div class="swatch-color" style="background-color: #c7ceea;" data-color="#c7ceea"></div>
+                                <div class="swatch-color" style="background-color: #ff9aa2;" data-color="#ff9aa2"></div>
+                            </div>
+                            <!-- Neon / Vibrant Swatches -->
+                            <div class="swatch-row-title">Neon Glows</div>
+                            <div class="swatch-list">
+                                <div class="swatch-color" style="background-color: #ff007f;" data-color="#ff007f"></div>
+                                <div class="swatch-color" style="background-color: #7f00ff;" data-color="#7f00ff"></div>
+                                <div class="swatch-color" style="background-color: #00f0ff;" data-color="#00f0ff"></div>
+                                <div class="swatch-color" style="background-color: #39ff14;" data-color="#39ff14"></div>
+                                <div class="swatch-color" style="background-color: #ff00f0;" data-color="#ff00f0"></div>
+                                <div class="swatch-color" style="background-color: #ffff00;" data-color="#ffff00"></div>
+                            </div>
+                            <!-- Luxury/Earthy Swatches -->
+                            <div class="swatch-row-title">Luxury Slate</div>
+                            <div class="swatch-list">
+                                <div class="swatch-color" style="background-color: #0d0d11;" data-color="#0d0d11"></div>
+                                <div class="swatch-color" style="background-color: #1a1a24;" data-color="#1a1a24"></div>
+                                <div class="swatch-color" style="background-color: #2b2b3c;" data-color="#2b2b3c"></div>
+                                <div class="swatch-color" style="background-color: #d1d5db;" data-color="#d1d5db"></div>
+                                <div class="swatch-color" style="background-color: #f5f5f7;" data-color="#f5f5f7"></div>
+                                <div class="swatch-color" style="background-color: #e5e7eb;" data-color="#e5e7eb"></div>
+                            </div>
+                        </div>
+                        <div class="swatch-container" id="swatches-gradient">
+                            <!-- Gradient presets -->
+                            <div class="gradient-list">
+                                <div class="swatch-gradient" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);" data-gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)" title="Sunset Rose"></div>
+                                <div class="swatch-gradient" style="background: linear-gradient(135deg, #5ee7df 0%, #b490ca 100%);" data-gradient="linear-gradient(135deg, #5ee7df 0%, #b490ca 100%)" title="Cosmic Mist"></div>
+                                <div class="swatch-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);" data-gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)" title="Plum Magic"></div>
+                                <div class="swatch-gradient" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);" data-gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)" title="Aqua Glow"></div>
+                                <div class="swatch-gradient" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);" data-gradient="linear-gradient(135deg, #fa709a 0%, #fee140 100%)" title="Mango Blast"></div>
+                                <div class="swatch-gradient" style="background: linear-gradient(135deg, #ff057c 0%, #8ec5fc 100%);" data-gradient="linear-gradient(135deg, #ff057c 0%, #8ec5fc 100%)" title="Bubblegum Aurora"></div>
+                                <div class="swatch-gradient" style="background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);" data-gradient="linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)" title="Deep Obsidian"></div>
+                                <div class="swatch-gradient" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);" data-gradient="linear-gradient(135deg, #30cfd0 0%, #330867 100%)" title="Neon Purple Ocean"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Procedural Asset Generators (Figma Killer Tools) -->
+                    <div class="presets-section">
+                        <h4>Procedural Vector Assets</h4>
+                        <p style="font-size:11px; color:var(--text-muted); margin-bottom:10px; line-height:1.3;">
+                            Generate organic vector shapes directly onto the canvas.
+                        </p>
+                        <div class="control-item" style="margin-bottom: 8px;">
+                            <label>Blob Points (Complexity): <span id="val-blob-points">5</span></label>
+                            <input type="range" id="gen-blob-points" min="3" max="12" value="5" style="margin: 4px 0;">
+                        </div>
+                        <div class="control-item" style="margin-bottom: 12px;">
+                            <label>Irregularity (Spikiness): <span id="val-blob-spiky">40</span>%</label>
+                            <input type="range" id="gen-blob-spiky" min="0" max="100" value="40" style="margin: 4px 0;">
+                        </div>
+                        <button class="btn btn-accent btn-full" id="btn-generate-blob">
+                            <i data-lucide="sparkles"></i> Generate Vector Blob
+                        </button>
+                    </div>
+
+                    <div class="presets-section">
+                        <h4>Aesthetic BG Patterns</h4>
+                        <div class="preset-grid" id="gen-pattern-grid">
+                            <button class="preset-card" data-pattern="grid" title="Futuristic Grid Lines">
+                                <div class="preview-swatch" style="background: linear-gradient(rgba(99,102,241,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.1) 1px, transparent 1px); background-size: 12px 12px; border: 1px solid var(--panel-border);"></div>
+                                <span>Tech Grid</span>
+                            </button>
+                            <button class="preset-card" data-pattern="dots" title="Modern Polka Dots">
+                                <div class="preview-swatch" style="background: radial-gradient(rgba(255,255,255,0.15) 1.5px, transparent 1.5px); background-size: 10px 10px; border: 1px solid var(--panel-border);"></div>
+                                <span>Polka Dots</span>
+                            </button>
+                            <button class="preset-card" data-pattern="stripes" title="Diagonal Alert Stripes">
+                                <div class="preview-swatch" style="background: repeating-linear-gradient(45deg, rgba(255,255,255,0.05), rgba(255,255,255,0.05) 8px, transparent 8px, transparent 16px); border: 1px solid var(--panel-border);"></div>
+                                <span>Stripes</span>
+                            </button>
+                            <button class="preset-card" data-pattern="aurora" title="Bioluminescent Mesh Glow">
+                                <div class="preview-swatch" style="background: radial-gradient(circle at 20% 30%, rgba(99,102,241,0.2) 0%, transparent 60%), radial-gradient(circle at 80% 75%, rgba(168,85,247,0.25) 0%, transparent 50%); border: 1px solid var(--panel-border);"></div>
+                                <span>Aurora BG</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Layers Tab -->
+                <div class="tab-content" id="layers-panel">
+                    <div class="layers-header">
+                        <h3>Layers List</h3>
+                        <p>Manage z-index and elements structure.</p>
+                    </div>
+                    <ul class="layers-list" id="layers-container">
+                        <!-- Rendered via JS -->
+                        <li class="empty-layers">No layers added yet</li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Code Export Modal -->
+    <div class="modal-overlay hidden" id="modal-export">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Export Web Component</h3>
+                <button class="modal-close" id="modal-export-close">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            
+            <div class="modal-tabs">
+                <button class="modal-tab active" data-modal-tab="export-combined">Combined HTML+CSS</button>
+                <button class="modal-tab" data-modal-tab="export-separated">Separated Code</button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Combined Tab -->
+                <div class="modal-tab-content active" id="export-combined">
+                    <div class="code-editor-wrapper">
+                        <div class="code-editor-header">
+                            <span>Single File Component</span>
+                            <button class="btn-copy-code" id="btn-copy-combined">
+                                <i data-lucide="copy"></i> Copy Code
+                            </button>
+                        </div>
+                        <pre><code class="language-html" id="code-combined-out">Loading code...</code></pre>
+                    </div>
+                </div>
+
+                <!-- Separated Tab -->
+                <div class="modal-tab-content" id="export-separated">
+                    <div class="code-dual-grid">
+                        <div class="code-editor-wrapper">
+                            <div class="code-editor-header">
+                                <span>HTML Structure</span>
+                                <button class="btn-copy-code" id="btn-copy-html">
+                                    <i data-lucide="copy"></i> Copy HTML
+                                </button>
+                            </div>
+                            <pre><code class="language-html" id="code-html-out">Loading HTML...</code></pre>
+                        </div>
+                        <div class="code-editor-wrapper">
+                            <div class="code-editor-header">
+                                <span>CSS Stylesheet</span>
+                                <button class="btn-copy-code" id="btn-copy-css">
+                                    <i data-lucide="copy"></i> Copy CSS
+                                </button>
+                            </div>
+                            <pre><code class="language-css" id="code-css-out">Loading CSS...</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btn-download-html">
+                    <i data-lucide="file-down"></i> Download HTML File
+                </button>
+                <button class="btn btn-primary" id="btn-download-project">
+                    <i data-lucide="archive"></i> Download Complete Project (.zip)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Auth Modal -->
+    <div class="modal-overlay hidden" id="modal-auth">
+        <div class="modal-box" style="max-width: 420px;">
+            <div class="modal-header">
+                <h3 id="auth-title">Welcome to DesignCraft</h3>
+                <button class="modal-close" id="modal-auth-close">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="padding-top: 10px;">
+                <div class="auth-message" id="auth-message" style="margin-bottom: 12px; font-size: 12px; line-height:1.4; color: var(--text-muted);">
+                    Sign in to save your designs in the cloud, sync between devices, and manage your projects.
+                </div>
+                <div class="alert-box danger-alert hidden" id="auth-error-box" style="margin-bottom:12px; padding:10px; font-size:12px; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); border-radius: var(--border-radius-sm);"></div>
+                
+                <form id="auth-form" onsubmit="return false;">
+                    <div class="control-item" style="margin-bottom: 12px;">
+                        <label for="auth-email">Email Address</label>
+                        <input type="email" id="auth-email" required placeholder="name@example.com" style="width: 100%;">
+                    </div>
+                    <div class="control-item" style="margin-bottom: 12px;">
+                        <label for="auth-password">Password</label>
+                        <input type="password" id="auth-password" required placeholder="Min 6 characters" style="width: 100%;">
+                    </div>
+                    <button class="btn btn-primary btn-full" id="btn-auth-submit" style="margin-top: 15px;">
+                        <i data-lucide="log-in"></i> Sign In
+                    </button>
+                </form>
+
+                <div class="auth-separator" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin: 15px 0;">
+                    <div style="flex: 1; height: 1px; background: var(--panel-border);"></div>
+                    <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">or</span>
+                    <div style="flex: 1; height: 1px; background: var(--panel-border);"></div>
+                </div>
+
+                <button class="btn btn-secondary btn-full" id="btn-google-sign-in" style="display: flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--panel-border); background: rgba(255,255,255,0.03); width: 100%;">
+                    <svg viewBox="0 0 24 24" width="16" height="16">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+                    </svg>
+                    <span>Sign In with Google</span>
+                </button>
+
+                <div class="auth-toggle-option" style="text-align: center; margin-top: 15px; font-size: 13px;">
+                    <span id="auth-toggle-text">Don't have an account?</span> 
+                    <a href="#" id="auth-toggle-link" style="color: var(--accent-color); font-weight: 600; text-decoration: none;">Sign Up</a>
+                </div>
+            </div>
+            <div class="modal-footer" style="background: rgba(0,0,0,0.1); justify-content: space-between; align-items: center;">
+                <a href="#" id="btn-auth-local" style="font-size:12px; color:var(--text-muted); text-decoration:none;">Skip & Use Offline Mode</a>
+                <button class="btn btn-secondary" id="btn-auth-settings" title="Configure custom Firebase instance">
+                    <i data-lucide="settings"></i> Config Firebase
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Config Setup Modal -->
+    <div class="modal-overlay hidden" id="modal-firebase-config">
+        <div class="modal-box" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3>Firebase Configuration</h3>
+                <button class="modal-close" id="modal-firebase-config-close">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px; line-height:1.4;">
+                    Paste your Firebase Web App configuration below to connect DesignCraft CSS to your own Firestore database. 
+                    Leave empty to reset to the default local storage fallback database.
+                </p>
+                <form id="firebase-config-form" onsubmit="return false;">
+                    <div class="control-item" style="margin-bottom: 10px;">
+                        <label>API Key (apiKey)</label>
+                        <input type="text" id="fb-apiKey" placeholder="AIzaSy...">
+                    </div>
+                    <div class="control-item" style="margin-bottom: 10px;">
+                        <label>Auth Domain (authDomain)</label>
+                        <input type="text" id="fb-authDomain" placeholder="your-project.firebaseapp.com">
+                    </div>
+                    <div class="control-item" style="margin-bottom: 10px;">
+                        <label>Project ID (projectId)</label>
+                        <input type="text" id="fb-projectId" placeholder="your-project">
+                    </div>
+                    <div class="control-item" style="margin-bottom: 10px;">
+                        <label>Storage Bucket (storageBucket)</label>
+                        <input type="text" id="fb-storageBucket" placeholder="your-project.appspot.com">
+                    </div>
+                    <div class="control-item" style="margin-bottom: 10px;">
+                        <label>Messaging Sender ID (messagingSenderId)</label>
+                        <input type="text" id="fb-messagingSenderId" placeholder="1234567890">
+                    </div>
+                    <div class="control-item" style="margin-bottom: 12px;">
+                        <label>App ID (appId)</label>
+                        <input type="text" id="fb-appId" placeholder="1:123456:web:abcd...">
+                    </div>
+                    <button class="btn btn-primary btn-full" id="btn-save-firebase-config">
+                        <i data-lucide="check"></i> Save & Initialize Firebase
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Saved Designs Project Manager Modal -->
+    <div class="modal-overlay hidden" id="modal-projects">
+        <div class="modal-box" style="max-width: 650px;">
+            <div class="modal-header">
+                <h3>My Saved Designs</h3>
+                <button class="modal-close" id="modal-projects-close">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 0;">
+                <div class="projects-list-container" style="max-height: 400px; overflow-y: auto;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size:13px;" id="projects-table">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--panel-border); background: rgba(0,0,0,0.15);">
+                                <th style="padding: 14px 20px; font-weight:600; color:var(--text-muted);">Design Name</th>
+                                <th style="padding: 14px 20px; font-weight:600; color:var(--text-muted);">Last Saved</th>
+                                <th style="padding: 14px 20px; font-weight:600; color:var(--text-muted); text-align:right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projects-table-body">
+                            <!-- Populated dynamically -->
+                            <tr>
+                                <td colspan="3" style="padding: 30px; text-align:center; color:var(--text-muted);">Loading projects...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase App/Auth/Firestore CDNs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <!-- JSZip via CDN (needed for full project download) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
+    <!-- Scripts -->
+    <script src="js/history.js"></script>
+    <script src="js/canvas.js"></script>
+    <script src="js/controls.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="js/design_library.js"></script>
+    <script src="js/security.js"></script>
+    <script src="js/ai.js"></script>
+    <script src="js/presets_data.js"></script>
+    <script src="js/generators.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

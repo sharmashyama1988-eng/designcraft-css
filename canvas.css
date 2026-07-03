@@ -1,0 +1,227 @@
+/* DesignCraft Canvas Styles & Keyframes
+   This stylesheet handles default styling for items inside the canvas
+   and defines the premium preset effects and animations. */
+
+/* Default Canvas Element Styles */
+.canvas-element {
+    position: absolute;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    transform-origin: center center;
+    transition: outline 0.1s ease;
+}
+
+.canvas-element.text-element {
+    display: block;
+    cursor: text;
+    white-space: pre-wrap;
+    word-break: break-word;
+    border: 1px dashed transparent;
+    padding: 4px;
+}
+
+.canvas-element.text-element:focus {
+    outline: none;
+    border: 1px dashed var(--accent-color, #6366f1);
+    cursor: text;
+}
+
+/* Shape Paths */
+.canvas-element svg {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    display: block;
+}
+
+/* PRESET STYLES */
+
+/* Glassmorphism Presets */
+.preset-glass-light {
+    background: rgba(255, 255, 255, 0.4) !important;
+    backdrop-filter: blur(12px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08) !important;
+}
+
+.preset-glass-dark {
+    background: rgba(15, 15, 20, 0.6) !important;
+    backdrop-filter: blur(16px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
+}
+
+/* Neumorphism Presets */
+.preset-neumorphic-light {
+    background: #e0e0e0 !important;
+    border: none !important;
+    box-shadow: 9px 9px 16px #bebebe, -9px -9px 16px #ffffff !important;
+    border-radius: 20px;
+}
+
+.preset-neumorphic-dark {
+    background: #1e1e24 !important;
+    border: none !important;
+    box-shadow: 6px 6px 12px #0f0f12, -6px -6px 12px #2d2d36 !important;
+    border-radius: 20px;
+}
+
+/* Cyberpunk Neon Preset */
+.preset-cyberpunk {
+    background: #000000 !important;
+    border: 2px solid #00f0ff !important;
+    box-shadow: 0 0 10px #00f0ff, inset 0 0 10px #00f0ff, 0 0 20px #ff007f !important;
+    color: #00f0ff !important;
+    font-family: 'Courier New', Courier, monospace !important;
+    text-shadow: 0 0 5px #00f0ff !important;
+}
+
+/* Aurora Glow Preset */
+.preset-aurora {
+    background: linear-gradient(135deg, #ff007f 0%, #7f00ff 50%, #00f0ff 100%) !important;
+    border: none !important;
+    box-shadow: 0 0 30px rgba(127, 0, 255, 0.5), 0 0 60px rgba(0, 240, 255, 0.3) !important;
+    color: #ffffff !important;
+}
+
+/* Retro Pixel Preset */
+.preset-retro {
+    background: #f8f9fa !important;
+    border: 4px solid #212529 !important;
+    box-shadow: 4px 4px 0px #212529 !important;
+    border-radius: 0px !important;
+}
+
+
+/* ANIMATION KEYFRAMES */
+
+/* 1. Pulse Animation */
+@keyframes animation-pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.anim-pulse {
+    animation-name: animation-pulse;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+}
+
+/* 2. Floating Animation */
+@keyframes animation-float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.anim-float {
+    animation-name: animation-float;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+}
+
+/* 3. Spin Animation */
+@keyframes animation-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.anim-spin {
+    animation-name: animation-spin;
+    animation-duration: 6s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+/* 4. Neon Pulsing Glow */
+@keyframes animation-neon-glow {
+    0% {
+        box-shadow: 0 0 5px rgba(99, 102, 241, 0.4), 0 0 10px rgba(99, 102, 241, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.8), 0 0 35px rgba(99, 102, 241, 0.5), 0 0 50px rgba(99, 102, 241, 0.3);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(99, 102, 241, 0.4), 0 0 10px rgba(99, 102, 241, 0.2);
+    }
+}
+
+.anim-neon-glow {
+    animation-name: animation-neon-glow;
+    animation-duration: 2.5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+}
+
+/* 5. Shake/Jelly Animation */
+@keyframes animation-jelly {
+    0%, 100% { transform: scale(1, 1); }
+    25% { transform: scale(0.9, 1.1); }
+    50% { transform: scale(1.1, 0.9); }
+    75% { transform: scale(0.95, 1.05); }
+}
+
+.anim-jelly {
+    animation-name: animation-jelly;
+    animation-duration: 1.5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+}
+
+/* 6. Bounce Animation */
+@keyframes animation-bounce {
+    0%, 100% {
+        transform: translateY(0);
+        animation-timing-function: cubic-bezier(0.8,0,1,1);
+    }
+    50% {
+        transform: translateY(-25%);
+        animation-timing-function: cubic-bezier(0,0,0.2,1);
+    }
+}
+
+.anim-bounce {
+    animation-name: animation-bounce;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
+/* 7. Rainbow Text/Border Animation */
+@keyframes animation-rainbow-bg {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.anim-rainbow-text {
+    background: linear-gradient(to right, #ff007f, #7f00ff, #00f0ff, #7f00ff, #ff007f);
+    background-size: 200% auto;
+    color: transparent !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    animation: animation-rainbow-bg 4s linear infinite;
+}
