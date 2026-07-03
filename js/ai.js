@@ -327,14 +327,19 @@ Output ONLY a raw JSON string in this schema:
 }
 No Markdown wrappers (no \`\`\`json). No explanation.`;
 
-        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        const fetchUrl = apiKey ? "https://openrouter.ai/api/v1/chat/completions" : "/api/openrouter";
+        const fetchHeaders = {
+            "Content-Type": "application/json",
+            "HTTP-Referer": window.location.origin,
+            "X-Title": "DesignCraft CSS Maker"
+        };
+        if (apiKey) {
+            fetchHeaders["Authorization"] = `Bearer ${apiKey}`;
+        }
+
+        const response = await fetch(fetchUrl, {
             method: "POST",
-            headers: {
-                "Authorization": `Bearer ${apiKey}`,
-                "Content-Type": "application/json",
-                "HTTP-Referer": "http://localhost:3000",
-                "X-Title": "DesignCraft CSS Maker"
-            },
+            headers: fetchHeaders,
             body: JSON.stringify({
                 model: model,
                 messages: [
@@ -421,9 +426,11 @@ Output ONLY a raw JSON string in this schema:
 }
 No Explanation. Output ONLY valid JSON.`;
 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-        
-        const response = await fetch(url, {
+        const fetchUrl = apiKey 
+            ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`
+            : `/api/gemini`;
+            
+        const response = await fetch(fetchUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -564,9 +571,11 @@ Output ONLY a raw JSON string in this exact format:
 Do not write anything else.
 Asset dimensions: width 320-400px, height auto. Compact, self-contained.`;
 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        const fetchUrl = apiKey 
+            ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`
+            : `/api/gemini`;
         
-        const response = await fetch(url, {
+        const response = await fetch(fetchUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
