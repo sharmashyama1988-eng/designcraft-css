@@ -58,7 +58,7 @@ class FirebaseService {
             projectId: "gen-lang-client-0444919395",
             storageBucket: "gen-lang-client-0444919395.firebasestorage.app",
             messagingSenderId: "298029099413",
-            appId: "1:298029099413:web:9cd4f1c5a2acc0389cee9c"
+            appId: "1:298029099413:web:49684693d7ed02359cee9c"
         };
 
         const savedConfig = localStorage.getItem('designcraft_firebase_config');
