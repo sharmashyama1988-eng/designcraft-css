@@ -427,7 +427,7 @@ Output ONLY a raw JSON string in this schema:
 No Explanation. Output ONLY valid JSON.`;
 
         const fetchUrl = apiKey 
-            ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`
+            ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`
             : `/api/gemini`;
             
         const response = await fetch(fetchUrl, {
@@ -500,7 +500,7 @@ ${tokens.refinedBlueprint}
 
 Output ONLY the raw complete HTML. No markdown, no explanation, no code fences.`;
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
             const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt }] }], generationConfig: { maxOutputTokens: 8192 } }) });
             if (!response.ok) { const d = await response.json(); throw new Error(`Gemini Error: ${d?.error?.message || response.status}`); }
             const data = await response.json();
@@ -572,7 +572,7 @@ Do not write anything else.
 Asset dimensions: width 320-400px, height auto. Compact, self-contained.`;
 
         const fetchUrl = apiKey 
-            ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`
+            ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`
             : `/api/gemini`;
         
         const response = await fetch(fetchUrl, {
