@@ -16,18 +16,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const setActiveTool = (toolName, btnEl) => {
         activeTool = toolName;
-        document.querySelectorAll('.nav-btn').forEach(btn => {
+        document.querySelectorAll('.nav-btn')?.forEach(btn => {
             btn.removeAttribute('data-active');
         });
         if (btnEl) btnEl.setAttribute('data-active', 'true');
     };
 
     if (btnSelect) {
-        btnSelect.addEventListener('click', () => setActiveTool('select', btnSelect));
+        btnSelect?.addEventListener('click', () => setActiveTool('select', btnSelect));
     }
     
     if (btnText) {
-        btnText.addEventListener('click', () => {
+        btnText?.addEventListener('click', () => {
             setActiveTool('select', btnSelect); // Keep selection pointer active
             window.canvasEditor.addText();
         });
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (shapeOptions.length > 0) {
         shapeOptions.forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn?.addEventListener('click', () => {
                 const shape = btn.dataset.shape;
                 setActiveTool('select', btnSelect); // Keep selection active
                 window.canvasEditor.addShape(shape);
@@ -47,11 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnImage = document.getElementById('tool-image');
     const imageUploadInput = document.getElementById('image-upload-input');
     if (btnImage && imageUploadInput) {
-        btnImage.addEventListener('click', () => {
+        btnImage?.addEventListener('click', () => {
             imageUploadInput.click();
         });
 
-        imageUploadInput.addEventListener('change', (e) => {
+        imageUploadInput?.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnUndo = document.getElementById('action-undo');
     const btnRedo = document.getElementById('action-redo');
 
-    btnUndo.addEventListener('click', () => {
+    btnUndo?.addEventListener('click', () => {
         const currentSnapshot = window.canvasEditor.getSnapshot();
         const prevSnapshot = window.historyManager.undo(currentSnapshot);
         if (prevSnapshot !== null) {
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    btnRedo.addEventListener('click', () => {
+    btnRedo?.addEventListener('click', () => {
         const currentSnapshot = window.canvasEditor.getSnapshot();
         const nextSnapshot = window.historyManager.redo(currentSnapshot);
         if (nextSnapshot !== null) {
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    btnClear.addEventListener('click', () => {
+    btnClear?.addEventListener('click', () => {
         if (confirm("Are you sure you want to clear the canvas? All elements will be deleted.")) {
             // Remove all canvas element nodes
             const artboard = document.getElementById('paint-artboard');
@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('light-theme');
     }
 
-    themeBtn.addEventListener('click', () => {
+    themeBtn?.addEventListener('click', () => {
         const isDark = document.body.classList.contains('dark-theme');
         if (isDark) {
             document.body.classList.remove('dark-theme');

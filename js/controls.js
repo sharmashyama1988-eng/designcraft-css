@@ -14,8 +14,8 @@ class ControlsManager {
     // Tab switcher layout
     initTabs() {
         // Main tabs
-        document.querySelectorAll('.sidebar-tabs').forEach(container => {
-            container.addEventListener('click', (e) => {
+        document.querySelectorAll('.sidebar-tabs')?.forEach(container => {
+            container?.addEventListener('click', (e) => {
                 const btn = e.target.closest('.tab-btn');
                 if (!btn) return;
                 
@@ -35,8 +35,8 @@ class ControlsManager {
         });
 
         // Color categories selector
-        document.querySelectorAll('.swatches-tabs').forEach(container => {
-            container.addEventListener('click', (e) => {
+        document.querySelectorAll('.swatches-tabs')?.forEach(container => {
+            container?.addEventListener('click', (e) => {
                 const btn = e.target.closest('.swatch-tab-btn');
                 if (!btn) return;
                 
@@ -45,8 +45,8 @@ class ControlsManager {
                 btn.classList.add('active');
                 
                 const cat = btn.dataset.swatchCat;
-                document.getElementById('swatches-solid').classList.toggle('active', cat === 'solid');
-                document.getElementById('swatches-gradient').classList.toggle('active', cat === 'gradient');
+                document.getElementById('swatches-solid')?.classList.toggle('active', cat === 'solid');
+                document.getElementById('swatches-gradient')?.classList.toggle('active', cat === 'gradient');
             });
         });
     }
@@ -68,8 +68,8 @@ class ControlsManager {
         controls.classList.remove('hidden');
         
         // 1. Dimensions
-        document.getElementById('prop-width').value = parseInt(el.style.width) || 100;
-        document.getElementById('prop-height').value = parseInt(el.style.height) || 100;
+        if (document.getElementById('prop-width')) document.getElementById('prop-width').value = parseInt(el.style.width) || 100;
+        if (document.getElementById('prop-height')) document.getElementById('prop-height').value = parseInt(el.style.height) || 100;
         
         // 2. Typography display (Only toggle visible for Text element)
         const typoSection = document.getElementById('section-typography');
@@ -79,16 +79,16 @@ class ControlsManager {
         if (isText) {
             // Typography values
             const family = el.style.fontFamily || "'Outfit', sans-serif";
-            document.getElementById('prop-font-family').value = family.replace(/"/g, "'");
-            document.getElementById('prop-font-size').value = parseInt(el.style.fontSize) || 16;
-            document.getElementById('prop-font-weight').value = el.style.fontWeight || "400";
+            if (document.getElementById('prop-font-family')) document.getElementById('prop-font-family').value = family.replace(/"/g, "'");
+            if (document.getElementById('prop-font-size')) document.getElementById('prop-font-size').value = parseInt(el.style.fontSize) || 16;
+            if (document.getElementById('prop-font-weight')) document.getElementById('prop-font-weight').value = el.style.fontWeight || "400";
             
             const textColor = el.style.color || "#ffffff";
             const hexColor = this.rgbToHex(textColor) || "#ffffff";
-            document.getElementById('prop-text-color').value = hexColor;
-            document.getElementById('prop-text-color-hex').value = hexColor;
+            if (document.getElementById('prop-text-color')) document.getElementById('prop-text-color').value = hexColor;
+            if (document.getElementById('prop-text-color-hex')) document.getElementById('prop-text-color-hex').value = hexColor;
             
-            document.getElementById('prop-text-align').value = el.style.textAlign || "left";
+            if (document.getElementById('prop-text-align')) document.getElementById('prop-text-align').value = el.style.textAlign || "left";
         }
         
         // 3. Background type
@@ -97,50 +97,50 @@ class ControlsManager {
         
         if (bg.includes('gradient')) {
             bgTypeInput.value = 'gradient';
-            document.getElementById('bg-color-control').classList.add('hidden');
-            document.getElementById('bg-gradient-control').classList.remove('hidden');
+            document.getElementById('bg-color-control')?.classList.add('hidden');
+            document.getElementById('bg-gradient-control')?.classList.remove('hidden');
             
             // Parse linear-gradient details
             const angleMatch = bg.match(/(\d+)deg/);
-            if (angleMatch) document.getElementById('prop-grad-angle').value = angleMatch[1];
+            if (angleMatch) if (document.getElementById('prop-grad-angle')) document.getElementById('prop-grad-angle').value = angleMatch[1];
             
             const colorsMatch = bg.match(/#[0-9a-fA-F]{6}|rgba?\([^)]+\)/g);
             if (colorsMatch && colorsMatch.length >= 2) {
-                document.getElementById('prop-grad-color1').value = this.rgbToHex(colorsMatch[0]);
-                document.getElementById('prop-grad-color2').value = this.rgbToHex(colorsMatch[1]);
+                if (document.getElementById('prop-grad-color1')) document.getElementById('prop-grad-color1').value = this.rgbToHex(colorsMatch[0]);
+                if (document.getElementById('prop-grad-color2')) document.getElementById('prop-grad-color2').value = this.rgbToHex(colorsMatch[1]);
             }
         } else if (bg === 'transparent' || bg === 'rgba(0, 0, 0, 0)') {
             bgTypeInput.value = 'transparent';
-            document.getElementById('bg-color-control').classList.add('hidden');
-            document.getElementById('bg-gradient-control').classList.add('hidden');
+            document.getElementById('bg-color-control')?.classList.add('hidden');
+            document.getElementById('bg-gradient-control')?.classList.add('hidden');
         } else {
             bgTypeInput.value = 'color';
-            document.getElementById('bg-color-control').classList.remove('hidden');
-            document.getElementById('bg-gradient-control').classList.add('hidden');
+            document.getElementById('bg-color-control')?.classList.remove('hidden');
+            document.getElementById('bg-gradient-control')?.classList.add('hidden');
             
             const baseColor = el.style.backgroundColor || "#6366f1";
             const hex = this.rgbToHex(baseColor) || "#6366f1";
-            document.getElementById('prop-bg-color').value = hex;
-            document.getElementById('prop-bg-color-hex').value = hex;
+            if (document.getElementById('prop-bg-color')) document.getElementById('prop-bg-color').value = hex;
+            if (document.getElementById('prop-bg-color-hex')) document.getElementById('prop-bg-color-hex').value = hex;
             
             // Opacity slider
             const rgba = baseColor.match(/rgba?\(.*?,\s*.*?,.*?,\s*(.*?)\)/);
-            document.getElementById('prop-bg-opacity').value = rgba ? parseFloat(rgba[1]) : 1.0;
+            if (document.getElementById('prop-bg-opacity')) document.getElementById('prop-bg-opacity').value = rgba ? parseFloat(rgba[1]) : 1.0;
         }
         
         // 4. Corners & Borders
         const radius = parseInt(el.style.borderRadius) || 0;
-        document.getElementById('prop-border-radius').value = radius;
+        if (document.getElementById('prop-border-radius')) document.getElementById('prop-border-radius').value = radius;
         document.getElementById('radius-val').innerText = radius;
         
         const borderWidth = parseInt(el.style.borderWidth) || 0;
-        document.getElementById('prop-border-width').value = borderWidth;
-        document.getElementById('prop-border-style').value = el.style.borderStyle || "none";
+        if (document.getElementById('prop-border-width')) document.getElementById('prop-border-width').value = borderWidth;
+        if (document.getElementById('prop-border-style')) document.getElementById('prop-border-style').value = el.style.borderStyle || "none";
         
         const bColor = el.style.borderColor || "#000000";
         const bColorHex = this.rgbToHex(bColor) || "#000000";
-        document.getElementById('prop-border-color').value = bColorHex;
-        document.getElementById('prop-border-color-hex').value = bColorHex;
+        if (document.getElementById('prop-border-color')) document.getElementById('prop-border-color').value = bColorHex;
+        if (document.getElementById('prop-border-color-hex')) document.getElementById('prop-border-color-hex').value = bColorHex;
         
         // 5. Shadows
         const shadow = el.style.boxShadow || "none";
@@ -153,22 +153,22 @@ class ControlsManager {
             
             // Parse shadow details (very simple parser)
             const inset = shadow.includes('inset');
-            document.getElementById('prop-shadow-inset').checked = inset;
+            if (document.getElementById('prop-shadow-inset')) document.getElementById('prop-shadow-inset').checked = inset;
             
             const cleanShadow = shadow.replace('inset', '').trim();
             // Match digits
             const digits = cleanShadow.match(/-?\d+px/g);
             if (digits && digits.length >= 3) {
-                document.getElementById('prop-shadow-x').value = parseInt(digits[0]);
-                document.getElementById('prop-shadow-y').value = parseInt(digits[1]);
-                document.getElementById('prop-shadow-blur').value = parseInt(digits[2]);
-                if (digits[3]) document.getElementById('prop-shadow-spread').value = parseInt(digits[3]);
+                if (document.getElementById('prop-shadow-x')) document.getElementById('prop-shadow-x').value = parseInt(digits[0]);
+                if (document.getElementById('prop-shadow-y')) document.getElementById('prop-shadow-y').value = parseInt(digits[1]);
+                if (document.getElementById('prop-shadow-blur')) document.getElementById('prop-shadow-blur').value = parseInt(digits[2]);
+                if (digits[3]) if (document.getElementById('prop-shadow-spread')) document.getElementById('prop-shadow-spread').value = parseInt(digits[3]);
             }
             
             // Match color
             const colorMatch = cleanShadow.match(/#[0-9a-fA-F]{6}|rgba?\([^)]+\)/);
             if (colorMatch) {
-                document.getElementById('prop-shadow-color').value = this.rgbToHex(colorMatch[0]);
+                if (document.getElementById('prop-shadow-color')) document.getElementById('prop-shadow-color').value = this.rgbToHex(colorMatch[0]);
             }
         } else {
             shadowEnable.checked = false;
@@ -190,10 +190,10 @@ class ControlsManager {
         const skMatch = transform.match(/skewX\((\d+)deg\)/);
         if (skMatch) skewVal = parseInt(skMatch[1]);
         
-        document.getElementById('prop-rotate').value = rotateVal;
+        if (document.getElementById('prop-rotate')) document.getElementById('prop-rotate').value = rotateVal;
         document.getElementById('rotate-val').innerText = rotateVal;
-        document.getElementById('prop-scale').value = scaleVal;
-        document.getElementById('prop-skew-x').value = skewVal;
+        if (document.getElementById('prop-scale')) document.getElementById('prop-scale').value = scaleVal;
+        if (document.getElementById('prop-skew-x')) document.getElementById('prop-skew-x').value = skewVal;
         
         // 7. Filters & Effects
         const filter = el.style.filter || "";
@@ -206,15 +206,15 @@ class ControlsManager {
         const brMatch = filter.match(/brightness\((\d+)%\)/);
         if (brMatch) brightVal = parseInt(brMatch[1]);
         
-        document.getElementById('prop-filter-blur').value = blurVal;
-        document.getElementById('prop-filter-brightness').value = brightVal;
+        if (document.getElementById('prop-filter-blur')) document.getElementById('prop-filter-blur').value = blurVal;
+        if (document.getElementById('prop-filter-brightness')) document.getElementById('prop-filter-brightness').value = brightVal;
         
         // Backdrop filter
         const backdrop = el.style.backdropFilter || el.style.webkitBackdropFilter || "";
         let backdropBlur = 0;
         const bdMatch = backdrop.match(/blur\((\d+)px\)/);
         if (bdMatch) backdropBlur = parseInt(bdMatch[1]);
-        document.getElementById('prop-backdrop-blur').value = backdropBlur;
+        if (document.getElementById('prop-backdrop-blur')) document.getElementById('prop-backdrop-blur').value = backdropBlur;
         
         // 8. Animation values sync
         let currentAnimType = 'none';
@@ -235,9 +235,9 @@ class ControlsManager {
             animInfinite = false;
         }
         
-        document.getElementById('prop-animation-type').value = currentAnimType;
-        document.getElementById('prop-anim-duration').value = animDuration;
-        document.getElementById('prop-anim-infinite').checked = animInfinite;
+        if (document.getElementById('prop-animation-type')) document.getElementById('prop-animation-type').value = currentAnimType;
+        if (document.getElementById('prop-anim-duration')) document.getElementById('prop-anim-duration').value = animDuration;
+        if (document.getElementById('prop-anim-infinite')) document.getElementById('prop-anim-infinite').checked = animInfinite;
         
         // --- NEW 50+ PROPERTIES SYNC ---
         // Spacing
@@ -288,17 +288,17 @@ class ControlsManager {
 
         // Text Effects
         if (isText) {
-            document.getElementById('section-text-effects').classList.remove('hidden');
+            document.getElementById('section-text-effects')?.classList.remove('hidden');
             const ls = el.style.letterSpacing || 'normal';
             const lh = el.style.lineHeight || 'normal';
             const tt = el.style.textTransform || 'none';
             const td = el.style.textDecoration || 'none';
-            if (document.getElementById('prop-letter-spacing')) document.getElementById('prop-letter-spacing').value = ls;
-            if (document.getElementById('prop-line-height')) document.getElementById('prop-line-height').value = lh;
-            if (document.getElementById('prop-text-transform')) document.getElementById('prop-text-transform').value = tt;
-            if (document.getElementById('prop-text-decoration')) document.getElementById('prop-text-decoration').value = td;
+            if (document.getElementById('prop-letter-spacing')) if (document.getElementById('prop-letter-spacing')) document.getElementById('prop-letter-spacing').value = ls;
+            if (document.getElementById('prop-line-height')) if (document.getElementById('prop-line-height')) document.getElementById('prop-line-height').value = lh;
+            if (document.getElementById('prop-text-transform')) if (document.getElementById('prop-text-transform')) document.getElementById('prop-text-transform').value = tt;
+            if (document.getElementById('prop-text-decoration')) if (document.getElementById('prop-text-decoration')) document.getElementById('prop-text-decoration').value = td;
         } else {
-            document.getElementById('section-text-effects').classList.add('hidden');
+            document.getElementById('section-text-effects')?.classList.add('hidden');
         }
 
         // Filters extra
@@ -308,25 +308,25 @@ class ControlsManager {
         const grayMatch = filter.match(/grayscale\((\d+)%\)/); if (grayMatch) grayscaleVal = parseInt(grayMatch[1]);
         const hueMatch = filter.match(/hue-rotate\((\d+)deg\)/); if (hueMatch) hueRotateVal = parseInt(hueMatch[1]);
         
-        if (document.getElementById('prop-filter-contrast')) document.getElementById('prop-filter-contrast').value = contrastVal;
-        if (document.getElementById('prop-filter-saturate')) document.getElementById('prop-filter-saturate').value = saturateVal;
-        if (document.getElementById('prop-filter-grayscale')) document.getElementById('prop-filter-grayscale').value = grayscaleVal;
-        if (document.getElementById('prop-filter-hue-rotate')) document.getElementById('prop-filter-hue-rotate').value = hueRotateVal;
+        if (document.getElementById('prop-filter-contrast')) if (document.getElementById('prop-filter-contrast')) document.getElementById('prop-filter-contrast').value = contrastVal;
+        if (document.getElementById('prop-filter-saturate')) if (document.getElementById('prop-filter-saturate')) document.getElementById('prop-filter-saturate').value = saturateVal;
+        if (document.getElementById('prop-filter-grayscale')) if (document.getElementById('prop-filter-grayscale')) document.getElementById('prop-filter-grayscale').value = grayscaleVal;
+        if (document.getElementById('prop-filter-hue-rotate')) if (document.getElementById('prop-filter-hue-rotate')) document.getElementById('prop-filter-hue-rotate').value = hueRotateVal;
         
         // Backdrop Brightness
         let bdBright = 100;
         const bdBrMatch = backdrop.match(/brightness\((\d+)%\)/);
         if (bdBrMatch) bdBright = parseInt(bdBrMatch[1]);
-        if (document.getElementById('prop-backdrop-brightness')) document.getElementById('prop-backdrop-brightness').value = bdBright;
+        if (document.getElementById('prop-backdrop-brightness')) if (document.getElementById('prop-backdrop-brightness')) document.getElementById('prop-backdrop-brightness').value = bdBright;
 
         // Transitions
         const transProp = el.style.transitionProperty || 'all';
         const transDur = parseFloat(el.style.transitionDuration) || 0.3;
         const transTime = el.style.transitionTimingFunction || 'ease';
         
-        if (document.getElementById('prop-transition-property')) document.getElementById('prop-transition-property').value = transProp;
-        if (document.getElementById('prop-transition-duration')) document.getElementById('prop-transition-duration').value = transDur;
-        if (document.getElementById('prop-transition-timing')) document.getElementById('prop-transition-timing').value = transTime;
+        if (document.getElementById('prop-transition-property')) if (document.getElementById('prop-transition-property')) document.getElementById('prop-transition-property').value = transProp;
+        if (document.getElementById('prop-transition-duration')) if (document.getElementById('prop-transition-duration')) document.getElementById('prop-transition-duration').value = transDur;
+        if (document.getElementById('prop-transition-timing')) if (document.getElementById('prop-transition-timing')) document.getElementById('prop-transition-timing').value = transTime;
     }
 
     // Set up inspector input handlers
@@ -342,34 +342,34 @@ class ControlsManager {
         };
 
         // Dimensions
-        document.getElementById('prop-width').addEventListener('input', (e) => {
+        document.getElementById('prop-width')?.addEventListener('input', (e) => {
             updateStyle('width', `${e.target.value}px`);
         });
-        document.getElementById('prop-width').addEventListener('change', () => {
+        document.getElementById('prop-width')?.addEventListener('change', () => {
             window.canvasEditor.triggerHistorySave();
         });
         
-        document.getElementById('prop-height').addEventListener('input', (e) => {
+        document.getElementById('prop-height')?.addEventListener('input', (e) => {
             updateStyle('height', `${e.target.value}px`);
         });
-        document.getElementById('prop-height').addEventListener('change', () => {
+        document.getElementById('prop-height')?.addEventListener('change', () => {
             window.canvasEditor.triggerHistorySave();
         });
 
         // Typography
-        document.getElementById('prop-font-family').addEventListener('change', (e) => {
+        document.getElementById('prop-font-family')?.addEventListener('change', (e) => {
             updateStyle('fontFamily', e.target.value, true);
         });
-        document.getElementById('prop-font-size').addEventListener('input', (e) => {
+        document.getElementById('prop-font-size')?.addEventListener('input', (e) => {
             updateStyle('fontSize', `${e.target.value}px`);
         });
-        document.getElementById('prop-font-size').addEventListener('change', () => {
+        document.getElementById('prop-font-size')?.addEventListener('change', () => {
             window.canvasEditor.triggerHistorySave();
         });
-        document.getElementById('prop-font-weight').addEventListener('change', (e) => {
+        document.getElementById('prop-font-weight')?.addEventListener('change', (e) => {
             updateStyle('fontWeight', e.target.value, true);
         });
-        document.getElementById('prop-text-align').addEventListener('change', (e) => {
+        document.getElementById('prop-text-align')?.addEventListener('change', (e) => {
             updateStyle('textAlign', e.target.value, true);
         });
 
@@ -377,12 +377,12 @@ class ControlsManager {
         const textColor = document.getElementById('prop-text-color');
         const textColorHex = document.getElementById('prop-text-color-hex');
         
-        textColor.addEventListener('input', (e) => {
+        textColor?.addEventListener('input', (e) => {
             textColorHex.value = e.target.value;
             updateStyle('color', e.target.value);
         });
-        textColor.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
-        textColorHex.addEventListener('input', (e) => {
+        textColor?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        textColorHex?.addEventListener('input', (e) => {
             if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
                 textColor.value = e.target.value;
                 updateStyle('color', e.target.value, true);
@@ -391,16 +391,16 @@ class ControlsManager {
 
         // Background type changes
         const bgType = document.getElementById('prop-bg-type');
-        bgType.addEventListener('change', (e) => {
+        bgType?.addEventListener('change', (e) => {
             const type = e.target.value;
-            document.getElementById('bg-color-control').classList.toggle('hidden', type !== 'color');
-            document.getElementById('bg-gradient-control').classList.toggle('hidden', type !== 'gradient');
+            document.getElementById('bg-color-control')?.classList.toggle('hidden', type !== 'color');
+            document.getElementById('bg-gradient-control')?.classList.toggle('hidden', type !== 'gradient');
             
             if (type === 'transparent') {
                 updateStyle('background', 'transparent', true);
             } else if (type === 'color') {
-                const color = document.getElementById('prop-bg-color').value;
-                const opacity = document.getElementById('prop-bg-opacity').value;
+                const color = document.getElementById('prop-bg-color')?.value;
+                const opacity = document.getElementById('prop-bg-opacity')?.value;
                 updateStyle('background', this.hexToRgba(color, opacity), true);
             } else if (type === 'gradient') {
                 this.applyGradientStyle();
@@ -418,15 +418,15 @@ class ControlsManager {
             updateStyle('backgroundColor', rgba); // fallback
         };
         
-        bgColor.addEventListener('input', (e) => {
+        bgColor?.addEventListener('input', (e) => {
             bgColorHex.value = e.target.value;
             updateSolidBg();
         });
-        bgColor.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
-        bgOpacity.addEventListener('input', updateSolidBg);
-        bgOpacity.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        bgColor?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        bgOpacity?.addEventListener('input', updateSolidBg);
+        bgOpacity?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
         
-        bgColorHex.addEventListener('input', (e) => {
+        bgColorHex?.addEventListener('input', (e) => {
             if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
                 bgColor.value = e.target.value;
                 updateSolidBg();
@@ -440,45 +440,45 @@ class ControlsManager {
         const gradAngle = document.getElementById('prop-grad-angle');
         const gradType = document.getElementById('prop-grad-type');
 
-        gradColor1.addEventListener('input', () => this.applyGradientStyle());
-        gradColor2.addEventListener('input', () => this.applyGradientStyle());
-        gradAngle.addEventListener('input', () => this.applyGradientStyle());
-        gradType.addEventListener('change', () => this.applyGradientStyle());
+        gradColor1?.addEventListener('input', () => this.applyGradientStyle());
+        gradColor2?.addEventListener('input', () => this.applyGradientStyle());
+        gradAngle?.addEventListener('input', () => this.applyGradientStyle());
+        gradType?.addEventListener('change', () => this.applyGradientStyle());
 
-        gradColor1.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
-        gradColor2.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
-        gradAngle.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        gradColor1?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        gradColor2?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        gradAngle?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
 
         // Corners & Borders
         const radiusInput = document.getElementById('prop-border-radius');
-        radiusInput.addEventListener('input', (e) => {
+        radiusInput?.addEventListener('input', (e) => {
             document.getElementById('radius-val').innerText = e.target.value;
             updateStyle('borderRadius', `${e.target.value}px`);
         });
-        radiusInput.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        radiusInput?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
 
         const borderWidth = document.getElementById('prop-border-width');
         const borderStyle = document.getElementById('prop-border-style');
         const borderColor = document.getElementById('prop-border-color');
         const borderColorHex = document.getElementById('prop-border-color-hex');
 
-        borderWidth.addEventListener('input', (e) => {
+        borderWidth?.addEventListener('input', (e) => {
             updateStyle('borderWidth', `${e.target.value}px`);
         });
-        borderWidth.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
-        borderStyle.addEventListener('change', (e) => {
+        borderWidth?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        borderStyle?.addEventListener('change', (e) => {
             updateStyle('borderStyle', e.target.value, true);
         });
 
         const updateBorderColor = () => {
             updateStyle('borderColor', borderColor.value);
         };
-        borderColor.addEventListener('input', (e) => {
+        borderColor?.addEventListener('input', (e) => {
             borderColorHex.value = e.target.value;
             updateBorderColor();
         });
-        borderColor.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
-        borderColorHex.addEventListener('input', (e) => {
+        borderColor?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        borderColorHex?.addEventListener('input', (e) => {
             if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
                 borderColor.value = e.target.value;
                 updateBorderColor();
@@ -490,7 +490,7 @@ class ControlsManager {
         const shadowEnable = document.getElementById('prop-shadow-enable');
         const shadowGroup = document.getElementById('shadow-properties-container');
         
-        shadowEnable.addEventListener('change', (e) => {
+        shadowEnable?.addEventListener('change', (e) => {
             shadowGroup.classList.toggle('disabled-group', !e.target.checked);
             this.applyShadowStyle();
         });
@@ -504,8 +504,8 @@ class ControlsManager {
 
         const shadowInputs = [shadowX, shadowY, shadowBlur, shadowSpread, shadowColor, shadowInset];
         shadowInputs.forEach(input => {
-            input.addEventListener('input', () => this.applyShadowStyle());
-            input.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+            input?.addEventListener('input', () => this.applyShadowStyle());
+            input?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
         });
 
         // Transforms
@@ -519,12 +519,12 @@ class ControlsManager {
             updateStyle('transform', t);
         };
 
-        rotateInput.addEventListener('input', updateTransform);
-        rotateInput.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
-        scaleInput.addEventListener('input', updateTransform);
-        scaleInput.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
-        skewInput.addEventListener('input', updateTransform);
-        skewInput.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        rotateInput?.addEventListener('input', updateTransform);
+        rotateInput?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        scaleInput?.addEventListener('input', updateTransform);
+        scaleInput?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        skewInput?.addEventListener('input', updateTransform);
+        skewInput?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
 
         // Filters
         const filterBlur = document.getElementById('prop-filter-blur');
@@ -535,33 +535,33 @@ class ControlsManager {
             updateStyle('filter', f);
         };
         
-        filterBlur.addEventListener('input', updateFilters);
-        filterBlur.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
-        filterBright.addEventListener('input', updateFilters);
-        filterBright.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        filterBlur?.addEventListener('input', updateFilters);
+        filterBlur?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        filterBright?.addEventListener('input', updateFilters);
+        filterBright?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
 
         // Backdrop Filter blur
         const bdBlur = document.getElementById('prop-backdrop-blur');
-        bdBlur.addEventListener('input', (e) => {
+        bdBlur?.addEventListener('input', (e) => {
             const b = e.target.value > 0 ? `blur(${e.target.value}px)` : 'none';
             updateStyle('backdropFilter', b);
             updateStyle('webkitBackdropFilter', b);
         });
-        bdBlur.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        bdBlur?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
 
         // Artboard Background color
         const artboardBg = document.getElementById('prop-canvas-bg');
         const artboardBgHex = document.getElementById('prop-canvas-bg-hex');
         
-        artboardBg.addEventListener('input', (e) => {
+        artboardBg?.addEventListener('input', (e) => {
             artboardBgHex.value = e.target.value;
-            document.getElementById('paint-artboard').style.backgroundColor = e.target.value;
+            document.getElementById('paint-artboard')?.style.backgroundColor = e.target.value;
         });
-        artboardBg.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
-        artboardBgHex.addEventListener('input', (e) => {
+        artboardBg?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        artboardBgHex?.addEventListener('input', (e) => {
             if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
                 artboardBg.value = e.target.value;
-                document.getElementById('paint-artboard').style.backgroundColor = e.target.value;
+                document.getElementById('paint-artboard')?.style.backgroundColor = e.target.value;
                 window.canvasEditor.triggerHistorySave();
             }
         });
@@ -572,15 +572,15 @@ class ControlsManager {
             const map = { mt:'marginTop', mb:'marginBottom', ml:'marginLeft', mr:'marginRight', pt:'paddingTop', pb:'paddingBottom', pl:'paddingLeft', pr:'paddingRight' };
             const input = document.getElementById(`prop-${prop}`);
             if(input) {
-                input.addEventListener('input', (e) => updateStyle(map[prop], `${e.target.value}px`));
-                input.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+                input?.addEventListener('input', (e) => updateStyle(map[prop], `${e.target.value}px`));
+                input?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
             }
         });
 
         // Layout & Flexbox
         const displayInput = document.getElementById('prop-display');
         if (displayInput) {
-            displayInput.addEventListener('change', (e) => {
+            displayInput?.addEventListener('change', (e) => {
                 updateStyle('display', e.target.value, true);
                 const flexControls = document.getElementById('flexbox-controls');
                 if (flexControls) flexControls.classList.toggle('hidden', e.target.value !== 'flex' && e.target.value !== 'inline-flex');
@@ -590,47 +590,47 @@ class ControlsManager {
         ['flex-direction', 'flex-wrap', 'justify-content', 'align-items'].forEach(prop => {
             const camel = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
             const input = document.getElementById(`prop-${prop}`);
-            if (input) input.addEventListener('change', (e) => updateStyle(camel, e.target.value, true));
+            if (input) input?.addEventListener('change', (e) => updateStyle(camel, e.target.value, true));
         });
         
         const gapInput = document.getElementById('prop-gap');
         if (gapInput) {
-            gapInput.addEventListener('input', (e) => updateStyle('gap', `${e.target.value}px`));
-            gapInput.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+            gapInput?.addEventListener('input', (e) => updateStyle('gap', `${e.target.value}px`));
+            gapInput?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
         }
 
         // Position
         const posInput = document.getElementById('prop-position');
-        if(posInput) posInput.addEventListener('change', (e) => updateStyle('position', e.target.value, true));
+        if(posInput) posInput?.addEventListener('change', (e) => updateStyle('position', e.target.value, true));
 
         ['top', 'bottom', 'left', 'right'].forEach(prop => {
             const input = document.getElementById(`prop-${prop}`);
             if(input) {
-                input.addEventListener('input', (e) => {
+                input?.addEventListener('input', (e) => {
                     const val = e.target.value;
                     updateStyle(prop, val ? (isNaN(val) ? val : `${val}px`) : 'auto');
                 });
-                input.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+                input?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
             }
         });
         
         const zIndexInput = document.getElementById('prop-z-index');
         if(zIndexInput) {
-            zIndexInput.addEventListener('input', (e) => updateStyle('zIndex', e.target.value));
-            zIndexInput.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+            zIndexInput?.addEventListener('input', (e) => updateStyle('zIndex', e.target.value));
+            zIndexInput?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
         }
 
         // Advanced CSS
         const opacityInput = document.getElementById('prop-opacity');
         if(opacityInput) {
-            opacityInput.addEventListener('input', (e) => updateStyle('opacity', e.target.value));
-            opacityInput.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+            opacityInput?.addEventListener('input', (e) => updateStyle('opacity', e.target.value));
+            opacityInput?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
         }
 
         ['mix-blend-mode', 'cursor', 'pointer-events', 'overflow'].forEach(prop => {
             const camel = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
             const input = document.getElementById(`prop-${prop}`);
-            if(input) input.addEventListener('change', (e) => updateStyle(camel, e.target.value, true));
+            if(input) input?.addEventListener('change', (e) => updateStyle(camel, e.target.value, true));
         });
 
         // Text Effects
@@ -638,15 +638,15 @@ class ControlsManager {
             const camel = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
             const input = document.getElementById(`prop-${prop}`);
             if(input) {
-                input.addEventListener('input', (e) => updateStyle(camel, e.target.value));
-                input.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+                input?.addEventListener('input', (e) => updateStyle(camel, e.target.value));
+                input?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
             }
         });
 
         ['text-transform', 'text-decoration'].forEach(prop => {
             const camel = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
             const input = document.getElementById(`prop-${prop}`);
-            if(input) input.addEventListener('change', (e) => updateStyle(camel, e.target.value, true));
+            if(input) input?.addEventListener('change', (e) => updateStyle(camel, e.target.value, true));
         });
 
         // Filters extended
@@ -667,10 +667,10 @@ class ControlsManager {
             updateStyle('filter', f);
         };
 
-        if(filterContrast) { filterContrast.addEventListener('input', updateFiltersExtended); filterContrast.addEventListener('change', () => window.canvasEditor.triggerHistorySave()); }
-        if(filterSaturate) { filterSaturate.addEventListener('input', updateFiltersExtended); filterSaturate.addEventListener('change', () => window.canvasEditor.triggerHistorySave()); }
-        if(filterGrayscale) { filterGrayscale.addEventListener('input', updateFiltersExtended); filterGrayscale.addEventListener('change', () => window.canvasEditor.triggerHistorySave()); }
-        if(filterHueRotate) { filterHueRotate.addEventListener('input', updateFiltersExtended); filterHueRotate.addEventListener('change', () => window.canvasEditor.triggerHistorySave()); }
+        if(filterContrast) { filterContrast?.addEventListener('input', updateFiltersExtended); filterContrast?.addEventListener('change', () => window.canvasEditor.triggerHistorySave()); }
+        if(filterSaturate) { filterSaturate?.addEventListener('input', updateFiltersExtended); filterSaturate?.addEventListener('change', () => window.canvasEditor.triggerHistorySave()); }
+        if(filterGrayscale) { filterGrayscale?.addEventListener('input', updateFiltersExtended); filterGrayscale?.addEventListener('change', () => window.canvasEditor.triggerHistorySave()); }
+        if(filterHueRotate) { filterHueRotate?.addEventListener('input', updateFiltersExtended); filterHueRotate?.addEventListener('change', () => window.canvasEditor.triggerHistorySave()); }
         
         // Backdrop filter extended
         const bdBrightInput = document.getElementById('prop-backdrop-brightness');
@@ -682,8 +682,8 @@ class ControlsManager {
             updateStyle('webkitBackdropFilter', b);
         };
         if(bdBrightInput) {
-            bdBrightInput.addEventListener('input', updateBackdropExtended);
-            bdBrightInput.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+            bdBrightInput?.addEventListener('input', updateBackdropExtended);
+            bdBrightInput?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
         }
 
         // Transitions
@@ -691,14 +691,14 @@ class ControlsManager {
             const camel = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
             const input = document.getElementById(`prop-${prop}`);
             if(input) {
-                if(prop==='transition-timing') input.addEventListener('change', (e) => updateStyle('transitionTimingFunction', e.target.value, true));
-                else input.addEventListener('input', (e) => updateStyle('transitionProperty', e.target.value));
+                if(prop==='transition-timing') input?.addEventListener('change', (e) => updateStyle('transitionTimingFunction', e.target.value, true));
+                else input?.addEventListener('input', (e) => updateStyle('transitionProperty', e.target.value));
             }
         });
         const transDur = document.getElementById('prop-transition-duration');
         if(transDur) {
-            transDur.addEventListener('input', (e) => updateStyle('transitionDuration', `${e.target.value}s`));
-            transDur.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+            transDur?.addEventListener('input', (e) => updateStyle('transitionDuration', `${e.target.value}s`));
+            transDur?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
         }
 
     }
@@ -706,7 +706,7 @@ class ControlsManager {
     // Set up color swatch controls
     initSwatchListeners() {
         // Solid swatches click
-        document.getElementById('swatches-solid').addEventListener('click', (e) => {
+        document.getElementById('swatches-solid')?.addEventListener('click', (e) => {
             const swatch = e.target.closest('.swatch-color');
             if (!swatch || !this.activeElement) return;
             
@@ -715,17 +715,17 @@ class ControlsManager {
             if (this.activeElement.classList.contains('text-element')) {
                 // If text element selected, color controls the font color
                 this.activeElement.style.color = color;
-                document.getElementById('prop-text-color').value = color;
-                document.getElementById('prop-text-color-hex').value = color;
+                if (document.getElementById('prop-text-color')) document.getElementById('prop-text-color').value = color;
+                if (document.getElementById('prop-text-color-hex')) document.getElementById('prop-text-color-hex').value = color;
             } else {
                 // Otherwise updates background color
                 this.activeElement.style.background = color;
                 this.activeElement.style.backgroundColor = color;
-                document.getElementById('prop-bg-type').value = 'color';
-                document.getElementById('prop-bg-color').value = color;
-                document.getElementById('prop-bg-color-hex').value = color;
-                document.getElementById('bg-color-control').classList.remove('hidden');
-                document.getElementById('bg-gradient-control').classList.add('hidden');
+                if (document.getElementById('prop-bg-type')) document.getElementById('prop-bg-type').value = 'color';
+                if (document.getElementById('prop-bg-color')) document.getElementById('prop-bg-color').value = color;
+                if (document.getElementById('prop-bg-color-hex')) document.getElementById('prop-bg-color-hex').value = color;
+                document.getElementById('bg-color-control')?.classList.remove('hidden');
+                document.getElementById('bg-gradient-control')?.classList.add('hidden');
             }
             
             window.canvasEditor.updateSelectionBox();
@@ -733,7 +733,7 @@ class ControlsManager {
         });
 
         // Gradient swatches click
-        document.getElementById('swatches-gradient').addEventListener('click', (e) => {
+        document.getElementById('swatches-gradient')?.addEventListener('click', (e) => {
             const swatch = e.target.closest('.swatch-gradient');
             if (!swatch || !this.activeElement) return;
             
@@ -741,15 +741,15 @@ class ControlsManager {
             this.activeElement.style.background = grad;
             
             // Sync gradient inputs
-            document.getElementById('prop-bg-type').value = 'gradient';
-            document.getElementById('bg-color-control').classList.add('hidden');
-            document.getElementById('bg-gradient-control').classList.remove('hidden');
+            if (document.getElementById('prop-bg-type')) document.getElementById('prop-bg-type').value = 'gradient';
+            document.getElementById('bg-color-control')?.classList.add('hidden');
+            document.getElementById('bg-gradient-control')?.classList.remove('hidden');
             
             // Parse details if matches
             const colorsMatch = grad.match(/#[0-9a-fA-F]{6}/g);
             if (colorsMatch && colorsMatch.length >= 2) {
-                document.getElementById('prop-grad-color1').value = colorsMatch[0];
-                document.getElementById('prop-grad-color2').value = colorsMatch[1];
+                if (document.getElementById('prop-grad-color1')) document.getElementById('prop-grad-color1').value = colorsMatch[0];
+                if (document.getElementById('prop-grad-color2')) document.getElementById('prop-grad-color2').value = colorsMatch[1];
             }
             
             window.canvasEditor.updateSelectionBox();
@@ -760,7 +760,7 @@ class ControlsManager {
     // Set up Built-in Presets and Animation selectors
     initPresetListeners() {
         // Preset cards (Instant styles)
-        document.getElementById('presets-panel').addEventListener('click', (e) => {
+        document.getElementById('presets-panel')?.addEventListener('click', (e) => {
             const presetBtn = e.target.closest('.preset-card');
             if (!presetBtn || !this.activeElement) return;
             
@@ -833,19 +833,19 @@ class ControlsManager {
             window.canvasEditor.triggerHistorySave();
         };
 
-        animSelect.addEventListener('change', applyAnimation);
-        animDuration.addEventListener('input', applyAnimation);
-        animDuration.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
-        animInfinite.addEventListener('change', applyAnimation);
+        animSelect?.addEventListener('change', applyAnimation);
+        animDuration?.addEventListener('input', applyAnimation);
+        animDuration?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        animInfinite?.addEventListener('change', applyAnimation);
     }
 
     // Helper functions for style updates
     applyGradientStyle() {
         if (!this.activeElement) return;
-        const angle = document.getElementById('prop-grad-angle').value;
-        const color1 = document.getElementById('prop-grad-color1').value;
-        const color2 = document.getElementById('prop-grad-color2').value;
-        const type = document.getElementById('prop-grad-type').value;
+        const angle = document.getElementById('prop-grad-angle')?.value;
+        const color1 = document.getElementById('prop-grad-color1')?.value;
+        const color2 = document.getElementById('prop-grad-color2')?.value;
+        const type = document.getElementById('prop-grad-type')?.value;
         
         let gradVal = '';
         if (type === 'linear') {
@@ -860,19 +860,19 @@ class ControlsManager {
 
     applyShadowStyle() {
         if (!this.activeElement) return;
-        const enable = document.getElementById('prop-shadow-enable').checked;
+        const enable = document.getElementById('prop-shadow-enable')?.checked;
         
         if (!enable) {
             this.activeElement.style.boxShadow = 'none';
             return;
         }
         
-        const x = document.getElementById('prop-shadow-x').value;
-        const y = document.getElementById('prop-shadow-y').value;
-        const blur = document.getElementById('prop-shadow-blur').value;
-        const spread = document.getElementById('prop-shadow-spread').value;
-        const color = document.getElementById('prop-shadow-color').value;
-        const inset = document.getElementById('prop-shadow-inset').checked ? 'inset' : '';
+        const x = document.getElementById('prop-shadow-x')?.value;
+        const y = document.getElementById('prop-shadow-y')?.value;
+        const blur = document.getElementById('prop-shadow-blur')?.value;
+        const spread = document.getElementById('prop-shadow-spread')?.value;
+        const color = document.getElementById('prop-shadow-color')?.value;
+        const inset = document.getElementById('prop-shadow-inset')?.checked ? 'inset' : '';
         
         const shadowVal = `${inset} ${x}px ${y}px ${blur}px ${spread}px ${color}`.trim();
         this.activeElement.style.boxShadow = shadowVal;
@@ -921,7 +921,7 @@ class ControlsManager {
             `;
             
             // Layer Item Click Selection
-            li.addEventListener('mousedown', (e) => {
+            li?.addEventListener('mousedown', (e) => {
                 if (e.target.closest('.layer-action-btn')) return; // ignore action buttons
                 window.canvasEditor.selectElement(el);
             });

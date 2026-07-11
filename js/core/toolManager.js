@@ -43,7 +43,7 @@ export default class ToolManager {
         this.activeTool.onActivate();
         
         // Update UI state
-        document.querySelectorAll('.tool-btn').forEach(btn => {
+        document.querySelectorAll('.tool-btn')?.forEach(btn => {
             btn.classList.toggle('active', btn.dataset.tool === toolId);
         });
     }

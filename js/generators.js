@@ -11,13 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const valSpiky = document.getElementById('val-blob-spiky');
     
     if (blobPoints && valPoints) {
-        blobPoints.addEventListener('input', (e) => {
+        blobPoints?.addEventListener('input', (e) => {
             valPoints.innerText = e.target.value;
         });
     }
     
     if (blobSpiky && valSpiky) {
-        blobSpiky.addEventListener('input', (e) => {
+        blobSpiky?.addEventListener('input', (e) => {
             valSpiky.innerText = e.target.value;
         });
     }
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Blob Generator Math & Execution
     const btnGenBlob = document.getElementById('btn-generate-blob');
     if (btnGenBlob) {
-        btnGenBlob.addEventListener('click', () => {
+        btnGenBlob?.addEventListener('click', () => {
             const points = parseInt(blobPoints.value) || 5;
             const spikiness = parseInt(blobSpiky.value) || 40;
             
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Dynamic Background Patterns click listeners
     const patternGrid = document.getElementById('gen-pattern-grid');
     if (patternGrid) {
-        patternGrid.addEventListener('click', (e) => {
+        patternGrid?.addEventListener('click', (e) => {
             const card = e.target.closest('.preset-card');
             if (!card || !window.controlsManager.activeElement) return;
             
@@ -157,9 +157,9 @@ document.addEventListener('DOMContentLoaded', () => {
             el.style.backgroundColor = ''; // clear solid fallback
             
             // Sync values to inspector
-            document.getElementById('prop-bg-type').value = 'transparent'; // Fallback display
-            document.getElementById('bg-color-control').classList.add('hidden');
-            document.getElementById('bg-gradient-control').classList.add('hidden');
+            if (document.getElementById('prop-bg-type')) document.getElementById('prop-bg-type').value = 'transparent'; // Fallback display
+            document.getElementById('bg-color-control')?.classList.add('hidden');
+            document.getElementById('bg-gradient-control')?.classList.add('hidden');
             
             window.canvasEditor.updateSelectionBox();
             window.canvasEditor.triggerHistorySave();
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. Random HSL Palette Generator click listener
     const btnRandomPalette = document.getElementById('btn-random-palette');
     if (btnRandomPalette) {
-        btnRandomPalette.addEventListener('click', () => {
+        btnRandomPalette?.addEventListener('click', () => {
             const el = window.canvasEditor?.selectedElement;
             if (!el) {
                 alert("Select an element on the canvas first to apply a random HSL palette!");

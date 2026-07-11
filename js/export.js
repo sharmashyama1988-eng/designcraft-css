@@ -17,12 +17,12 @@ class ExportService {
     }
 
     initEvents() {
-        this.btnExport.addEventListener('click', () => this.openExportModal());
-        this.modalExportClose.addEventListener('click', () => this.modalExport.classList.add('hidden'));
+        this.btnExport?.addEventListener('click', () => this.openExportModal());
+        this.modalExportClose?.addEventListener('click', () => this.modalExport.classList.add('hidden'));
         
         // Tab navigators in Modal
         this.modalExport.querySelectorAll('.modal-tab').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+            btn?.addEventListener('click', (e) => {
                 const targetTab = e.target.dataset.modalTab;
                 
                 this.modalExport.querySelectorAll('.modal-tab').forEach(b => b.classList.remove('active'));
@@ -35,13 +35,13 @@ class ExportService {
         });
 
         // Copy buttons
-        document.getElementById('btn-copy-combined').addEventListener('click', () => this.copyToClipboard(this.codeCombined, "Combined code"));
-        document.getElementById('btn-copy-html').addEventListener('click', () => this.copyToClipboard(this.codeHtml, "HTML structure"));
-        document.getElementById('btn-copy-css').addEventListener('click', () => this.copyToClipboard(this.codeCss, "CSS stylesheet"));
+        document.getElementById('btn-copy-combined')?.addEventListener('click', () => this.copyToClipboard(this.codeCombined, "Combined code"));
+        document.getElementById('btn-copy-html')?.addEventListener('click', () => this.copyToClipboard(this.codeHtml, "HTML structure"));
+        document.getElementById('btn-copy-css')?.addEventListener('click', () => this.copyToClipboard(this.codeCss, "CSS stylesheet"));
         
         // Downloads
-        document.getElementById('btn-download-html').addEventListener('click', () => this.downloadSingleHtml());
-        document.getElementById('btn-download-project').addEventListener('click', () => this.downloadZipArchive());
+        document.getElementById('btn-download-html')?.addEventListener('click', () => this.downloadSingleHtml());
+        document.getElementById('btn-download-project')?.addEventListener('click', () => this.downloadZipArchive());
     }
 
     openExportModal() {

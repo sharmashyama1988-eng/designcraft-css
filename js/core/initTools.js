@@ -178,8 +178,8 @@ document.addEventListener('DOMContentLoaded', () => {
         toolsRegistry.forEach(tool => window.toolManager.registerTool(tool));
         
         // Listen to UI buttons
-        document.querySelectorAll('.toolbox-btn[data-tool]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.toolbox-btn[data-tool]')?.forEach(btn => {
+            btn?.addEventListener('click', (e) => {
                 const toolId = e.currentTarget.dataset.tool;
                 if (toolId) {
                     window.toolManager.activateTool(toolId);

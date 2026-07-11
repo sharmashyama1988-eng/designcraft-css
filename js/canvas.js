@@ -31,28 +31,28 @@ class CanvasEditor {
 
     initEvents() {
         // Selection/Click-off
-        this.artboard.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+        this.artboard?.addEventListener('mousedown', (e) => this.handleMouseDown(e));
         window.addEventListener('mousemove', (e) => this.handleMouseMove(e));
         window.addEventListener('mouseup', () => this.handleMouseUp());
         
         // Double-click for text edit
-        this.artboard.addEventListener('dblclick', (e) => this.handleDoubleClick(e));
+        this.artboard?.addEventListener('dblclick', (e) => this.handleDoubleClick(e));
         
         // Key bindings (Delete element, Copy/Paste)
         window.addEventListener('keydown', (e) => this.handleKeyDown(e));
         
         // Zoom bindings
-        document.getElementById('zoom-in').addEventListener('click', () => this.adjustZoom(0.1));
-        document.getElementById('zoom-out').addEventListener('click', () => this.adjustZoom(-0.1));
+        document.getElementById('zoom-in')?.addEventListener('click', () => this.adjustZoom(0.1));
+        document.getElementById('zoom-out')?.addEventListener('click', () => this.adjustZoom(-0.1));
         
         // Alignments
-        document.getElementById('order-to-front').addEventListener('click', () => this.bringToFront());
-        document.getElementById('order-forward').addEventListener('click', () => this.moveForward());
-        document.getElementById('order-backward').addEventListener('click', () => this.moveBackward());
-        document.getElementById('order-to-back').addEventListener('click', () => this.sendToBack());
+        document.getElementById('order-to-front')?.addEventListener('click', () => this.bringToFront());
+        document.getElementById('order-forward')?.addEventListener('click', () => this.moveForward());
+        document.getElementById('order-backward')?.addEventListener('click', () => this.moveBackward());
+        document.getElementById('order-to-back')?.addEventListener('click', () => this.sendToBack());
 
         // Dynamic 3D Tilt interaction delegated on the artboard
-        this.artboard.addEventListener('mousemove', (e) => {
+        this.artboard?.addEventListener('mousemove', (e) => {
             const tiltCheckbox = document.getElementById('ai-enable-tilt');
             if (tiltCheckbox && !tiltCheckbox.checked) return;
 
@@ -78,16 +78,16 @@ class CanvasEditor {
         // Toggle listener to clear tilt styles instantly when disabled
         const tiltCheckbox = document.getElementById('ai-enable-tilt');
         if (tiltCheckbox) {
-            tiltCheckbox.addEventListener('change', () => {
+            tiltCheckbox?.addEventListener('change', () => {
                 if (!tiltCheckbox.checked) {
-                    document.querySelectorAll('.canvas-element').forEach(el => {
+                    document.querySelectorAll('.canvas-element')?.forEach(el => {
                         el.style.transform = '';
                     });
                 }
             });
         }
         
-        this.artboard.addEventListener('mouseout', (e) => {
+        this.artboard?.addEventListener('mouseout', (e) => {
             const tiltCheckbox = document.getElementById('ai-enable-tilt');
             if (tiltCheckbox && !tiltCheckbox.checked) return;
             const el = e.target.closest('.canvas-element');
@@ -403,15 +403,15 @@ class CanvasEditor {
         }
         
         // Display guides
-        document.getElementById('guide-x').classList.toggle('hidden', !showXGuide);
-        document.getElementById('guide-y').classList.toggle('hidden', !showYGuide);
+        document.getElementById('guide-x')?.classList.toggle('hidden', !showXGuide);
+        document.getElementById('guide-y')?.classList.toggle('hidden', !showYGuide);
         
         return { x: snappedX, y: snappedY };
     }
 
     hideGuides() {
-        document.getElementById('guide-x').classList.add('hidden');
-        document.getElementById('guide-y').classList.add('hidden');
+        document.getElementById('guide-x')?.classList.add('hidden');
+        document.getElementById('guide-y')?.classList.add('hidden');
     }
 
     // Double-click text box to edit text in place
@@ -455,8 +455,8 @@ class CanvasEditor {
             this.triggerHistorySave();
         };
         
-        textarea.addEventListener('blur', finishEdit);
-        textarea.addEventListener('keydown', (e) => {
+        textarea?.addEventListener('blur', finishEdit);
+        textarea?.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 textarea.blur();

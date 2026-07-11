@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span style="font-size: 9px; font-weight: 500; margin-top: 4px; display: block; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; width: 100%; text-align: center;">${p.name}</span>
             `;
 
-            btn.addEventListener('click', () => {
+            btn?.addEventListener('click', () => {
                 applyPresetToSelection(p);
             });
 
@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Tab clicks event delegation
-    presetTabs.addEventListener('click', (e) => {
+    presetTabs?.addEventListener('click', (e) => {
         const tab = e.target.closest('.preset-cat-btn');
         if (!tab) return;
 

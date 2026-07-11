@@ -140,37 +140,37 @@ class FirebaseService {
 
     initFormListeners() {
         // Open/Close triggers
-        this.btnLoginTrigger.addEventListener('click', () => {
+        this.btnLoginTrigger?.addEventListener('click', () => {
             this.modalAuth.classList.remove('hidden');
             this.resetAuthForm();
         });
-        this.modalAuthClose.addEventListener('click', () => this.modalAuth.classList.add('hidden'));
+        this.modalAuthClose?.addEventListener('click', () => this.modalAuth.classList.add('hidden'));
         
-        document.getElementById('btn-open-firebase-config').addEventListener('click', () => {
+        document.getElementById('btn-open-firebase-config')?.addEventListener('click', () => {
             this.modalConfig.classList.remove('hidden');
             this.populateConfigForm();
         });
         
-        document.getElementById('btn-auth-settings').addEventListener('click', () => {
+        document.getElementById('btn-auth-settings')?.addEventListener('click', () => {
             this.modalAuth.classList.add('hidden');
             this.modalConfig.classList.remove('hidden');
             this.populateConfigForm();
         });
         
-        this.modalConfigClose.addEventListener('click', () => this.modalConfig.classList.add('hidden'));
+        this.modalConfigClose?.addEventListener('click', () => this.modalConfig.classList.add('hidden'));
         
-        this.btnOpenProjects.addEventListener('click', () => {
+        this.btnOpenProjects?.addEventListener('click', () => {
             this.modalProjects.classList.remove('hidden');
             this.loadAndRenderProjects();
         });
-        this.modalProjectsClose.addEventListener('click', () => this.modalProjects.classList.add('hidden'));
+        this.modalProjectsClose?.addEventListener('click', () => this.modalProjects.classList.add('hidden'));
         
         // Save current canvas click
-        this.btnSave.addEventListener('click', () => this.saveCurrentProject());
+        this.btnSave?.addEventListener('click', () => this.saveCurrentProject());
 
         // Toggle Auth Registration/Login modes
         let isSignUpMode = false;
-        this.authToggleLink.addEventListener('click', (e) => {
+        this.authToggleLink?.addEventListener('click', (e) => {
             e.preventDefault();
             isSignUpMode = !isSignUpMode;
             
@@ -183,10 +183,10 @@ class FirebaseService {
         });
 
         // Submit Auth Form
-        this.authForm.addEventListener('submit', async (e) => {
+        this.authForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
+            const email = document.getElementById('auth-email')?.value;
+            const password = document.getElementById('auth-password')?.value;
             this.authErrorBox.classList.add('hidden');
             
             if (this.localMode) {
@@ -210,7 +210,7 @@ class FirebaseService {
 
         // Google Sign In trigger
         if (this.btnGoogleSignIn) {
-            this.btnGoogleSignIn.addEventListener('click', async () => {
+            this.btnGoogleSignIn?.addEventListener('click', async () => {
                 if (this.localMode || !this.auth) {
                     this.showAuthError("Firebase is running in offline local mode. Switch to online mode or configure custom settings first.");
                     return;
@@ -233,7 +233,7 @@ class FirebaseService {
         }
 
         // Logout
-        this.btnLogout.addEventListener('click', () => {
+        this.btnLogout?.addEventListener('click', () => {
             if (this.auth) {
                 this.auth.signOut();
             }
@@ -242,7 +242,7 @@ class FirebaseService {
         });
 
         // Use Offline fallbacks
-        document.getElementById('btn-auth-local').addEventListener('click', (e) => {
+        document.getElementById('btn-auth-local')?.addEventListener('click', (e) => {
             e.preventDefault();
             this.localMode = true;
             this.updateAuthUi(null);
@@ -250,13 +250,13 @@ class FirebaseService {
         });
 
         // Save Custom Configuration
-        document.getElementById('btn-save-firebase-config').addEventListener('click', () => {
-            const apiKey = document.getElementById('fb-apiKey').value.trim();
-            const authDomain = document.getElementById('fb-authDomain').value.trim();
-            const projectId = document.getElementById('fb-projectId').value.trim();
-            const storageBucket = document.getElementById('fb-storageBucket').value.trim();
-            const messagingSenderId = document.getElementById('fb-messagingSenderId').value.trim();
-            const appId = document.getElementById('fb-appId').value.trim();
+        document.getElementById('btn-save-firebase-config')?.addEventListener('click', () => {
+            const apiKey = document.getElementById('fb-apiKey')?.value.trim();
+            const authDomain = document.getElementById('fb-authDomain')?.value.trim();
+            const projectId = document.getElementById('fb-projectId')?.value.trim();
+            const storageBucket = document.getElementById('fb-storageBucket')?.value.trim();
+            const messagingSenderId = document.getElementById('fb-messagingSenderId')?.value.trim();
+            const appId = document.getElementById('fb-appId')?.value.trim();
 
             if (!apiKey || !projectId) {
                 // Clear configuration -> Reset to default local storage
@@ -292,12 +292,12 @@ class FirebaseService {
         const savedConfig = localStorage.getItem('designcraft_firebase_config');
         if (savedConfig) {
             const config = JSON.parse(savedConfig);
-            document.getElementById('fb-apiKey').value = config.apiKey || '';
-            document.getElementById('fb-authDomain').value = config.authDomain || '';
-            document.getElementById('fb-projectId').value = config.projectId || '';
-            document.getElementById('fb-storageBucket').value = config.storageBucket || '';
-            document.getElementById('fb-messagingSenderId').value = config.messagingSenderId || '';
-            document.getElementById('fb-appId').value = config.appId || '';
+            if (document.getElementById('fb-apiKey')) document.getElementById('fb-apiKey').value = config.apiKey || '';
+            if (document.getElementById('fb-authDomain')) document.getElementById('fb-authDomain').value = config.authDomain || '';
+            if (document.getElementById('fb-projectId')) document.getElementById('fb-projectId').value = config.projectId || '';
+            if (document.getElementById('fb-storageBucket')) document.getElementById('fb-storageBucket').value = config.storageBucket || '';
+            if (document.getElementById('fb-messagingSenderId')) document.getElementById('fb-messagingSenderId').value = config.messagingSenderId || '';
+            if (document.getElementById('fb-appId')) document.getElementById('fb-appId').value = config.appId || '';
         }
     }
 
@@ -312,7 +312,7 @@ class FirebaseService {
         this.activeProjectName = designName;
 
         const htmlContent = window.canvasEditor.getSnapshot();
-        const canvasBg = document.getElementById('paint-artboard').style.backgroundColor || "#121216";
+        const canvasBg = document.getElementById('paint-artboard')?.style.backgroundColor || "#121216";
         const timestamp = Date.now();
 
         const designData = {

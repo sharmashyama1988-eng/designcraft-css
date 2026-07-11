@@ -28,8 +28,8 @@ class AIService {
     }
 
     initEvents() {
-        this.btnGenerate.addEventListener('click', () => this.runDualAIPipeline());
-        this.btnCopyCode.addEventListener('click', () => this.copyGeneratedCode());
+        this.btnGenerate?.addEventListener('click', () => this.runDualAIPipeline());
+        this.btnCopyCode?.addEventListener('click', () => this.copyGeneratedCode());
 
         // Sidebar Code Preview Tab Selectors
         const tabCss = document.getElementById('tab-selector-css');
@@ -38,7 +38,7 @@ class AIService {
         const preHtml = document.getElementById('pre-generated-html');
 
         if (tabCss && tabHtml && preCss && preHtml) {
-            tabCss.addEventListener('click', () => {
+            tabCss?.addEventListener('click', () => {
                 tabCss.classList.add('active');
                 tabCss.style.borderBottomColor = 'var(--accent-color)';
                 tabCss.style.color = 'var(--text-primary)';
@@ -52,7 +52,7 @@ class AIService {
                 this.activeCodeTab = 'css';
             });
 
-            tabHtml.addEventListener('click', () => {
+            tabHtml?.addEventListener('click', () => {
                 tabHtml.classList.add('active');
                 tabHtml.style.borderBottomColor = 'var(--accent-color)';
                 tabHtml.style.color = 'var(--text-primary)';
@@ -68,9 +68,9 @@ class AIService {
         }
 
         // Creation Mode Buttons click toggler
-        document.querySelectorAll('.creation-mode-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.creation-mode-btn').forEach(b => {
+        document.querySelectorAll('.creation-mode-btn')?.forEach(btn => {
+            btn?.addEventListener('click', (e) => {
+                document.querySelectorAll('.creation-mode-btn')?.forEach(b => {
                     b.classList.remove('active');
                 });
                 btn.classList.add('active');
@@ -161,7 +161,7 @@ class AIService {
             <div class="shimmer-line short"></div>
             <div class="shimmer-btn"></div>
         `;
-        document.getElementById('paint-artboard').appendChild(this.shimmerEl);
+        document.getElementById('paint-artboard')?.appendChild(this.shimmerEl);
 
         try {
             // Check for Lock Style state
@@ -746,19 +746,21 @@ Asset dimensions: width 320-400px, height auto. Compact, self-contained.`;
         // Write full HTML into iframe (blob URL — safe, no XSS)
         const blob = new Blob([fullHtml], { type: 'text/html' });
         const blobUrl = URL.createObjectURL(blob);
-        document.getElementById('fsp-iframe').src = blobUrl;
+        if (document.getElementById('fsp-iframe')) document.getElementById('fsp-iframe').src = blobUrl;
 
         // Store code for copy/download
         overlay._fullHtml = fullHtml;
 
         // Close
-        document.getElementById('fsp-close').onclick = () => {
+        const fspClose = document.getElementById('fsp-close');
+        if (fspClose) fspClose.onclick = () => {
             URL.revokeObjectURL(blobUrl);
             overlay.remove();
         };
 
         // Download
-        document.getElementById('fsp-download').onclick = () => {
+        const fspDownload = document.getElementById('fsp-download');
+        if (fspDownload) fspDownload.onclick = () => {
             const a = document.createElement('a');
             a.href = blobUrl;
             a.download = `designcraft-site-${Date.now()}.html`;
@@ -766,10 +768,15 @@ Asset dimensions: width 320-400px, height auto. Compact, self-contained.`;
         };
 
         // Copy
-        document.getElementById('fsp-copy').onclick = () => {
+        const fspCopy = document.getElementById('fsp-copy');
+        if (fspCopy) fspCopy.onclick = () => {
             navigator.clipboard.writeText(fullHtml).then(() => {
-                document.getElementById('fsp-copy').textContent = '✅ Copied!';
-                setTimeout(() => document.getElementById('fsp-copy').textContent = '📋 Copy Code', 2000);
+                const el = document.getElementById('fsp-copy');
+                if (el) el.textContent = '✅ Copied!';
+                setTimeout(() => {
+                    const el2 = document.getElementById('fsp-copy');
+                    if (el2) el2.textContent = '📋 Copy Code';
+                }, 2000);
             });
         };
 

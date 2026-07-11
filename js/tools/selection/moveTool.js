@@ -25,7 +25,7 @@ export default class MoveTool extends BaseTool {
         if (!this.editor) return;
 
         // Check for resize handle click
-        if (e.target.classList.contains('resize-handle')) {
+        if (e.target && e.target.classList && e.target.classList.contains('resize-handle')) {
             e.stopPropagation();
             this.isResizing = true;
             this.activeHandle = e.target.dataset.handle;
@@ -40,7 +40,7 @@ export default class MoveTool extends BaseTool {
             return;
         }
 
-        const clickedEl = e.target.closest('.canvas-element');
+        const clickedEl = (e.target && e.target.closest) ? e.target.closest('.canvas-element') : null;
         if (clickedEl) {
             e.stopPropagation();
             if (clickedEl.querySelector('.editing-input-active')) return;
@@ -87,6 +87,7 @@ export default class MoveTool extends BaseTool {
             let newLeft = this.startState.left;
             let newTop = this.startState.top;
 
+            if (!this.activeHandle) return;
             if (this.activeHandle.includes('r')) newWidth += dx;
             if (this.activeHandle.includes('l')) { newWidth -= dx; newLeft += dx; }
             if (this.activeHandle.includes('b')) newHeight += dy;

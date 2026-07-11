@@ -30,9 +30,13 @@ export default class GenFillTool extends BaseTool {
         this.promptGenerativeFill();
     }
     async promptGenerativeFill() {
-        if (Math.abs(this.selectionRect.w) < 10 || Math.abs(this.selectionRect.h) < 10) return;
-        const prompt = window.prompt("Enter prompt for Generative Fill:", "");
-        if (!prompt) return;
-        alert(`Generating fill for: "${prompt}"...`);
+        try {
+            if (Math.abs(this.selectionRect.w) < 10 || Math.abs(this.selectionRect.h) < 10) return;
+            const prompt = window.prompt("Enter prompt for Generative Fill:", "");
+            if (!prompt) return;
+            alert(`Generating fill for: "${prompt}"...`);
+        } catch (error) {
+            console.error("Error in generative fill:", error);
+        }
     }
 }
