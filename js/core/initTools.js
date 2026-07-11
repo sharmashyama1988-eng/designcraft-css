@@ -40,7 +40,7 @@ const toolsRegistry = [
     { id: 'tool_line', name: 'Line', icon: 'minus', path: 'shapes/lineTool.js', shortcut: 'L', group: 'shape' },
     { id: 'tool_custom_shape', name: 'Custom Shape', icon: 'shapes', path: 'shapes/customShapeTool.js', group: 'shape' },
     { id: 'tool_grid_gen', name: 'Grid Generator', icon: 'grid-3x3', path: 'shapes/gridGenTool.js', group: 'shape' },
-    { id: 'tool_spiral', name: 'Spiral', icon: 'hurricane', path: 'shapes/spiralTool.js', group: 'shape' },
+    { id: 'tool_spiral', name: 'Spiral', icon: 'tornado', path: 'shapes/spiralTool.js', group: 'shape' },
     { id: 'tool_heart', name: 'Heart Tool', icon: 'heart', path: 'shapes/heartTool.js', group: 'shape' },
     { id: 'tool_arrow', name: 'Arrow Tool', icon: 'arrow-up-right', path: 'shapes/arrowTool.js', group: 'shape' },
     { id: 'tool_blob', name: 'Blob Maker', icon: 'cloud', path: 'shapes/blobTool.js', group: 'shape' },
@@ -72,7 +72,7 @@ const toolsRegistry = [
     { id: 'tool_kerning', name: 'Kerning Tool', icon: 'move-horizontal', path: 'text/kerningTool.js', group: 'text' },
 
     // 6. Retouching & Healing
-    { id: 'tool_spot_heal', name: 'Spot Healing Brush', icon: 'band-aid', path: 'retouching/spotHealTool.js', shortcut: 'J', group: 'retouch' },
+    { id: 'tool_spot_heal', name: 'Spot Healing Brush', icon: 'crosshair', path: 'retouching/spotHealTool.js', shortcut: 'J', group: 'retouch' },
     { id: 'tool_heal', name: 'Healing Brush', icon: 'cross', path: 'retouching/healTool.js', group: 'retouch' },
     { id: 'tool_patch', name: 'Patch Tool', icon: 'scan-face', path: 'retouching/patchTool.js', group: 'retouch' },
     { id: 'tool_ca_move', name: 'Content-Aware Move', icon: 'move', path: 'retouching/contentAwareTool.js', group: 'retouch' },

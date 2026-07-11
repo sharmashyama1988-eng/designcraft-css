@@ -22,20 +22,26 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btnEl) btnEl.setAttribute('data-active', 'true');
     };
 
-    btnSelect.addEventListener('click', () => setActiveTool('select', btnSelect));
+    if (btnSelect) {
+        btnSelect.addEventListener('click', () => setActiveTool('select', btnSelect));
+    }
     
-    btnText.addEventListener('click', () => {
-        setActiveTool('select', btnSelect); // Keep selection pointer active
-        window.canvasEditor.addText();
-    });
-
-    shapeOptions.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const shape = btn.dataset.shape;
-            setActiveTool('select', btnSelect); // Keep selection active
-            window.canvasEditor.addShape(shape);
+    if (btnText) {
+        btnText.addEventListener('click', () => {
+            setActiveTool('select', btnSelect); // Keep selection pointer active
+            window.canvasEditor.addText();
         });
-    });
+    }
+
+    if (shapeOptions.length > 0) {
+        shapeOptions.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const shape = btn.dataset.shape;
+                setActiveTool('select', btnSelect); // Keep selection active
+                window.canvasEditor.addShape(shape);
+            });
+        });
+    }
 
     // 2.5 Image Import
     const btnImage = document.getElementById('tool-image');
