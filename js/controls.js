@@ -555,13 +555,13 @@ class ControlsManager {
         
         artboardBg?.addEventListener('input', (e) => {
             artboardBgHex.value = e.target.value;
-            document.getElementById('paint-artboard')?.style.backgroundColor = e.target.value;
+            if (document.getElementById('paint-artboard')) document.getElementById('paint-artboard').style.backgroundColor = e.target.value;
         });
         artboardBg?.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
         artboardBgHex?.addEventListener('input', (e) => {
             if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
                 artboardBg.value = e.target.value;
-                document.getElementById('paint-artboard')?.style.backgroundColor = e.target.value;
+                if (document.getElementById('paint-artboard')) document.getElementById('paint-artboard').style.backgroundColor = e.target.value;
                 window.canvasEditor.triggerHistorySave();
             }
         });
