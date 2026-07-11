@@ -1,7 +1,11 @@
 const { Redis } = require('ioredis');
 
-// Connect to Redis using environment variable
-const redis = new Redis(process.env.REDIS_URL);
+// Connect to Redis using environment variable with fail-fast options
+const redis = process.env.REDIS_URL ? new Redis(process.env.REDIS_URL, {
+  maxRetriesPerRequest: 1,
+  enableOfflineQueue: false,
+  connectTimeout: 2000
+}) : null;
 
 // Daily limit per user
 const DAILY_LIMIT = 20;
@@ -19,7 +23,7 @@ export default async function handler(req, res) {
   // Extract uid (we'll send this from frontend) and actual payload
   const { uid, payload } = req.body;
 
-  if (uid) {
+  if (uid && redis) {
     try {
       const dateStr = new Date().toISOString().split('T')[0];
       const redisKey = `usage:openrouter:${uid}:${dateStr}`;
