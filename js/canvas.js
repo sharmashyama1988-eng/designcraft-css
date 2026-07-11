@@ -219,6 +219,12 @@ class CanvasEditor {
 
     // Handles mousedown on Canvas elements & handles
     handleMouseDown(e) {
+        if (window.toolManager && window.toolManager.activeTool) {
+            window.toolManager.handlePointerDown(e);
+            return;
+        }
+
+        // --- FALLBACK (Old logic) ---
         // If clicking on resize handles
         if (e.target.classList.contains('resize-handle')) {
             e.stopPropagation();
@@ -259,6 +265,12 @@ class CanvasEditor {
 
     // Handles dragging & resizing movements
     handleMouseMove(e) {
+        if (window.toolManager && window.toolManager.activeTool) {
+            window.toolManager.handlePointerMove(e);
+            return;
+        }
+
+        // --- FALLBACK (Old logic) ---
         if (!this.selectedElement) return;
         
         const deltaX = (e.clientX - this.startX) / this.zoomLevel;
@@ -329,6 +341,12 @@ class CanvasEditor {
     }
 
     handleMouseUp() {
+        if (window.toolManager && window.toolManager.activeTool) {
+            window.toolManager.handlePointerUp({});
+            return;
+        }
+
+        // --- FALLBACK (Old logic) ---
         if (this.isDragging || this.isResizing) {
             this.isDragging = false;
             this.isResizing = false;

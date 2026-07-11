@@ -409,6 +409,127 @@ body {
     position: relative;
 }
 
+/* Sidebar Toolbox (Photoshop Style) */
+.sidebar-toolbox {
+    width: 48px;
+    background-color: var(--panel-bg);
+    border-right: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 0;
+    z-index: 20;
+    box-shadow: var(--shadow-sm);
+    overflow-y: auto;
+}
+
+.toolbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+    align-items: center;
+}
+
+.toolbox-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    width: 32px;
+    height: 32px;
+    border-radius: var(--border-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.toolbox-btn svg {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2;
+}
+
+.toolbox-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+}
+
+.toolbox-btn.active {
+    background: var(--accent-color);
+    color: #fff;
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.toolbox-divider {
+    width: 24px;
+    height: 1px;
+    background-color: var(--panel-border);
+    margin: 8px 0;
+}
+
+.toolbox-colors {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding-top: 12px;
+    position: relative;
+    width: 100%;
+}
+
+.color-swatch-wrapper {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: 2px solid var(--panel-bg);
+    box-shadow: 0 0 0 1px var(--panel-border);
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+}
+
+.color-swatch-wrapper.bg {
+    position: absolute;
+    top: 24px;
+    left: 20px;
+    z-index: 1;
+}
+
+.color-swatch-wrapper input[type="color"] {
+    width: 150%;
+    height: 150%;
+    transform: translate(-25%, -25%);
+    cursor: pointer;
+    border: none;
+    padding: 0;
+}
+
+.swap-colors-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    position: absolute;
+    top: 6px;
+    right: 4px;
+    z-index: 3;
+    padding: 2px;
+    border-radius: 2px;
+}
+
+.swap-colors-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.1);
+}
+
+.swap-colors-btn svg {
+    width: 10px;
+    height: 10px;
+}
+
 /* Sidebars Base */
 .sidebar-left, .sidebar-right {
     width: 320px;

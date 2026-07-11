@@ -37,6 +37,52 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // 2.5 Image Import
+    const btnImage = document.getElementById('tool-image');
+    const imageUploadInput = document.getElementById('image-upload-input');
+    if (btnImage && imageUploadInput) {
+        btnImage.addEventListener('click', () => {
+            imageUploadInput.click();
+        });
+
+        imageUploadInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const imgDataUrl = event.target.result;
+                
+                // Create an image element on the canvas
+                const el = document.createElement('div');
+                el.className = 'canvas-element';
+                el.id = `el-${Date.now()}`;
+                el.dataset.type = 'image';
+                el.dataset.name = `Image ${++window.canvasEditor.elementCounter}`;
+                
+                el.style.left = '100px';
+                el.style.top = '100px';
+                el.style.width = '200px';
+                el.style.height = '200px';
+                el.style.backgroundImage = `url(${imgDataUrl})`;
+                el.style.backgroundSize = 'cover';
+                el.style.backgroundPosition = 'center';
+                el.style.backgroundRepeat = 'no-repeat';
+                el.style.zIndex = window.canvasEditor.getMaxZIndex() + 1;
+                
+                window.canvasEditor.artboard.appendChild(el);
+                window.canvasEditor.selectElement(el);
+                window.canvasEditor.triggerHistorySave();
+                window.canvasEditor.updateElementsCount();
+                if (window.controlsManager) window.controlsManager.updateLayersList();
+            };
+            reader.readAsDataURL(file);
+            
+            // Reset input so the same file can be selected again
+            e.target.value = '';
+        });
+    }
+
     // 3. Toolbar Undo/Redo & Clear Actions
     const btnUndo = document.getElementById('action-undo');
     const btnRedo = document.getElementById('action-redo');

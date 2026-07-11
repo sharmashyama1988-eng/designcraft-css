@@ -238,6 +238,95 @@ class ControlsManager {
         document.getElementById('prop-animation-type').value = currentAnimType;
         document.getElementById('prop-anim-duration').value = animDuration;
         document.getElementById('prop-anim-infinite').checked = animInfinite;
+        
+        // --- NEW 50+ PROPERTIES SYNC ---
+        // Spacing
+        ['mt', 'mb', 'ml', 'mr', 'pt', 'pb', 'pl', 'pr'].forEach(prop => {
+            const map = { mt:'marginTop', mb:'marginBottom', ml:'marginLeft', mr:'marginRight', pt:'paddingTop', pb:'paddingBottom', pl:'paddingLeft', pr:'paddingRight' };
+            const val = parseInt(el.style[map[prop]]) || 0;
+            const input = document.getElementById(`prop-${prop}`);
+            if(input) input.value = val;
+        });
+        
+        // Layout & Flexbox
+        const display = el.style.display || 'block';
+        const displayInput = document.getElementById('prop-display');
+        if (displayInput) displayInput.value = display;
+        const flexControls = document.getElementById('flexbox-controls');
+        if (flexControls) flexControls.classList.toggle('hidden', display !== 'flex' && display !== 'inline-flex');
+        
+        ['flex-direction', 'flex-wrap', 'justify-content', 'align-items'].forEach(prop => {
+            const camel = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
+            const val = el.style[camel] || '';
+            const input = document.getElementById(`prop-${prop}`);
+            if(input && val) input.value = val;
+        });
+        const gapInput = document.getElementById('prop-gap');
+        if (gapInput) gapInput.value = parseInt(el.style.gap) || 0;
+
+        // Position
+        const posInput = document.getElementById('prop-position');
+        if (posInput) posInput.value = el.style.position || 'static';
+        ['top', 'bottom', 'left', 'right'].forEach(prop => {
+            const val = el.style[prop] || '';
+            const input = document.getElementById(`prop-${prop}`);
+            if (input) input.value = val.replace('px', '');
+        });
+        const zIndexInput = document.getElementById('prop-z-index');
+        if (zIndexInput) zIndexInput.value = el.style.zIndex || '';
+
+        // Advanced CSS
+        const opacityInput = document.getElementById('prop-opacity');
+        if (opacityInput) opacityInput.value = el.style.opacity !== '' ? el.style.opacity : '1';
+        
+        ['mix-blend-mode', 'cursor', 'pointer-events', 'overflow'].forEach(prop => {
+            const camel = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
+            const val = el.style[camel] || (prop==='pointer-events'||prop==='cursor'?'auto':(prop==='mix-blend-mode'?'normal':'visible'));
+            const input = document.getElementById(`prop-${prop}`);
+            if(input) input.value = val;
+        });
+
+        // Text Effects
+        if (isText) {
+            document.getElementById('section-text-effects').classList.remove('hidden');
+            const ls = el.style.letterSpacing || 'normal';
+            const lh = el.style.lineHeight || 'normal';
+            const tt = el.style.textTransform || 'none';
+            const td = el.style.textDecoration || 'none';
+            if (document.getElementById('prop-letter-spacing')) document.getElementById('prop-letter-spacing').value = ls;
+            if (document.getElementById('prop-line-height')) document.getElementById('prop-line-height').value = lh;
+            if (document.getElementById('prop-text-transform')) document.getElementById('prop-text-transform').value = tt;
+            if (document.getElementById('prop-text-decoration')) document.getElementById('prop-text-decoration').value = td;
+        } else {
+            document.getElementById('section-text-effects').classList.add('hidden');
+        }
+
+        // Filters extra
+        let contrastVal = 100, saturateVal = 100, grayscaleVal = 0, hueRotateVal = 0;
+        const contMatch = filter.match(/contrast\((\d+)%\)/); if (contMatch) contrastVal = parseInt(contMatch[1]);
+        const satMatch = filter.match(/saturate\((\d+)%\)/); if (satMatch) saturateVal = parseInt(satMatch[1]);
+        const grayMatch = filter.match(/grayscale\((\d+)%\)/); if (grayMatch) grayscaleVal = parseInt(grayMatch[1]);
+        const hueMatch = filter.match(/hue-rotate\((\d+)deg\)/); if (hueMatch) hueRotateVal = parseInt(hueMatch[1]);
+        
+        if (document.getElementById('prop-filter-contrast')) document.getElementById('prop-filter-contrast').value = contrastVal;
+        if (document.getElementById('prop-filter-saturate')) document.getElementById('prop-filter-saturate').value = saturateVal;
+        if (document.getElementById('prop-filter-grayscale')) document.getElementById('prop-filter-grayscale').value = grayscaleVal;
+        if (document.getElementById('prop-filter-hue-rotate')) document.getElementById('prop-filter-hue-rotate').value = hueRotateVal;
+        
+        // Backdrop Brightness
+        let bdBright = 100;
+        const bdBrMatch = backdrop.match(/brightness\((\d+)%\)/);
+        if (bdBrMatch) bdBright = parseInt(bdBrMatch[1]);
+        if (document.getElementById('prop-backdrop-brightness')) document.getElementById('prop-backdrop-brightness').value = bdBright;
+
+        // Transitions
+        const transProp = el.style.transitionProperty || 'all';
+        const transDur = parseFloat(el.style.transitionDuration) || 0.3;
+        const transTime = el.style.transitionTimingFunction || 'ease';
+        
+        if (document.getElementById('prop-transition-property')) document.getElementById('prop-transition-property').value = transProp;
+        if (document.getElementById('prop-transition-duration')) document.getElementById('prop-transition-duration').value = transDur;
+        if (document.getElementById('prop-transition-timing')) document.getElementById('prop-transition-timing').value = transTime;
     }
 
     // Set up inspector input handlers
@@ -476,6 +565,142 @@ class ControlsManager {
                 window.canvasEditor.triggerHistorySave();
             }
         });
+
+        // --- NEW 50+ PROPERTIES LISTENERS ---
+        // Spacing
+        ['mt', 'mb', 'ml', 'mr', 'pt', 'pb', 'pl', 'pr'].forEach(prop => {
+            const map = { mt:'marginTop', mb:'marginBottom', ml:'marginLeft', mr:'marginRight', pt:'paddingTop', pb:'paddingBottom', pl:'paddingLeft', pr:'paddingRight' };
+            const input = document.getElementById(`prop-${prop}`);
+            if(input) {
+                input.addEventListener('input', (e) => updateStyle(map[prop], `${e.target.value}px`));
+                input.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+            }
+        });
+
+        // Layout & Flexbox
+        const displayInput = document.getElementById('prop-display');
+        if (displayInput) {
+            displayInput.addEventListener('change', (e) => {
+                updateStyle('display', e.target.value, true);
+                const flexControls = document.getElementById('flexbox-controls');
+                if (flexControls) flexControls.classList.toggle('hidden', e.target.value !== 'flex' && e.target.value !== 'inline-flex');
+            });
+        }
+        
+        ['flex-direction', 'flex-wrap', 'justify-content', 'align-items'].forEach(prop => {
+            const camel = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
+            const input = document.getElementById(`prop-${prop}`);
+            if (input) input.addEventListener('change', (e) => updateStyle(camel, e.target.value, true));
+        });
+        
+        const gapInput = document.getElementById('prop-gap');
+        if (gapInput) {
+            gapInput.addEventListener('input', (e) => updateStyle('gap', `${e.target.value}px`));
+            gapInput.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        }
+
+        // Position
+        const posInput = document.getElementById('prop-position');
+        if(posInput) posInput.addEventListener('change', (e) => updateStyle('position', e.target.value, true));
+
+        ['top', 'bottom', 'left', 'right'].forEach(prop => {
+            const input = document.getElementById(`prop-${prop}`);
+            if(input) {
+                input.addEventListener('input', (e) => {
+                    const val = e.target.value;
+                    updateStyle(prop, val ? (isNaN(val) ? val : `${val}px`) : 'auto');
+                });
+                input.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+            }
+        });
+        
+        const zIndexInput = document.getElementById('prop-z-index');
+        if(zIndexInput) {
+            zIndexInput.addEventListener('input', (e) => updateStyle('zIndex', e.target.value));
+            zIndexInput.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        }
+
+        // Advanced CSS
+        const opacityInput = document.getElementById('prop-opacity');
+        if(opacityInput) {
+            opacityInput.addEventListener('input', (e) => updateStyle('opacity', e.target.value));
+            opacityInput.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        }
+
+        ['mix-blend-mode', 'cursor', 'pointer-events', 'overflow'].forEach(prop => {
+            const camel = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
+            const input = document.getElementById(`prop-${prop}`);
+            if(input) input.addEventListener('change', (e) => updateStyle(camel, e.target.value, true));
+        });
+
+        // Text Effects
+        ['letter-spacing', 'line-height'].forEach(prop => {
+            const camel = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
+            const input = document.getElementById(`prop-${prop}`);
+            if(input) {
+                input.addEventListener('input', (e) => updateStyle(camel, e.target.value));
+                input.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+            }
+        });
+
+        ['text-transform', 'text-decoration'].forEach(prop => {
+            const camel = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
+            const input = document.getElementById(`prop-${prop}`);
+            if(input) input.addEventListener('change', (e) => updateStyle(camel, e.target.value, true));
+        });
+
+        // Filters extended
+        const filterContrast = document.getElementById('prop-filter-contrast');
+        const filterSaturate = document.getElementById('prop-filter-saturate');
+        const filterGrayscale = document.getElementById('prop-filter-grayscale');
+        const filterHueRotate = document.getElementById('prop-filter-hue-rotate');
+        
+        const updateFiltersExtended = () => {
+            const b = document.getElementById('prop-filter-blur')?.value || 0;
+            const br = document.getElementById('prop-filter-brightness')?.value || 100;
+            const c = filterContrast?.value || 100;
+            const s = filterSaturate?.value || 100;
+            const g = filterGrayscale?.value || 0;
+            const h = filterHueRotate?.value || 0;
+            
+            const f = `blur(${b}px) brightness(${br}%) contrast(${c}%) saturate(${s}%) grayscale(${g}%) hue-rotate(${h}deg)`;
+            updateStyle('filter', f);
+        };
+
+        if(filterContrast) { filterContrast.addEventListener('input', updateFiltersExtended); filterContrast.addEventListener('change', () => window.canvasEditor.triggerHistorySave()); }
+        if(filterSaturate) { filterSaturate.addEventListener('input', updateFiltersExtended); filterSaturate.addEventListener('change', () => window.canvasEditor.triggerHistorySave()); }
+        if(filterGrayscale) { filterGrayscale.addEventListener('input', updateFiltersExtended); filterGrayscale.addEventListener('change', () => window.canvasEditor.triggerHistorySave()); }
+        if(filterHueRotate) { filterHueRotate.addEventListener('input', updateFiltersExtended); filterHueRotate.addEventListener('change', () => window.canvasEditor.triggerHistorySave()); }
+        
+        // Backdrop filter extended
+        const bdBrightInput = document.getElementById('prop-backdrop-brightness');
+        const updateBackdropExtended = () => {
+            const bl = document.getElementById('prop-backdrop-blur')?.value || 0;
+            const br = bdBrightInput?.value || 100;
+            const b = (bl > 0 || br !== 100) ? `blur(${bl}px) brightness(${br}%)` : 'none';
+            updateStyle('backdropFilter', b);
+            updateStyle('webkitBackdropFilter', b);
+        };
+        if(bdBrightInput) {
+            bdBrightInput.addEventListener('input', updateBackdropExtended);
+            bdBrightInput.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        }
+
+        // Transitions
+        ['transition-property', 'transition-timing'].forEach(prop => {
+            const camel = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
+            const input = document.getElementById(`prop-${prop}`);
+            if(input) {
+                if(prop==='transition-timing') input.addEventListener('change', (e) => updateStyle('transitionTimingFunction', e.target.value, true));
+                else input.addEventListener('input', (e) => updateStyle('transitionProperty', e.target.value));
+            }
+        });
+        const transDur = document.getElementById('prop-transition-duration');
+        if(transDur) {
+            transDur.addEventListener('input', (e) => updateStyle('transitionDuration', `${e.target.value}s`));
+            transDur.addEventListener('change', () => window.canvasEditor.triggerHistorySave());
+        }
+
     }
 
     // Set up color swatch controls

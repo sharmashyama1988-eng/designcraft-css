@@ -141,43 +141,11 @@
     <main class="workspace-container">
         <!-- Sidebar Toolbox (Photoshop Style) -->
         <aside class="sidebar-toolbox">
-            <div class="toolbox-group">
-                <button class="toolbox-btn active" id="tool-select" title="Move Tool (V)"><i data-lucide="mouse-pointer-2"></i></button>
-                <button class="toolbox-btn" id="tool-direct-select" title="Direct Selection Tool (A)"><i data-lucide="mouse-pointer"></i></button>
+            <div id="dynamic-tools-container" style="display:flex; flex-direction:column; align-items:center; width:100%; overflow-y:auto; overflow-x:hidden; padding-bottom: 20px;">
+                <!-- 100+ Tools will be dynamically injected here by initTools.js -->
             </div>
-            <div class="toolbox-divider"></div>
-            <div class="toolbox-group">
-                <button class="toolbox-btn" id="tool-rectangle" title="Rectangle Tool (M)"><i data-lucide="square"></i></button>
-                <button class="toolbox-btn" id="tool-ellipse" title="Ellipse Tool (O)"><i data-lucide="circle"></i></button>
-                <button class="toolbox-btn" id="tool-polygon" title="Polygon Tool"><i data-lucide="hexagon"></i></button>
-                <button class="toolbox-btn" id="tool-line" title="Line Tool (L)"><i data-lucide="minus"></i></button>
-            </div>
-            <div class="toolbox-divider"></div>
-            <div class="toolbox-group">
-                <button class="toolbox-btn" id="tool-pen" title="Pen Tool (P)"><i data-lucide="pen-tool"></i></button>
-                <button class="toolbox-btn" id="tool-pencil" title="Pencil Tool (N)"><i data-lucide="pencil"></i></button>
-                <button class="toolbox-btn" id="tool-brush" title="Brush Tool (B)"><i data-lucide="paintbrush"></i></button>
-                <button class="toolbox-btn" id="tool-eraser" title="Eraser Tool (E)"><i data-lucide="eraser"></i></button>
-            </div>
-            <div class="toolbox-divider"></div>
-            <div class="toolbox-group">
-                <button class="toolbox-btn" id="tool-text" title="Horizontal Type Tool (T)"><i data-lucide="type"></i></button>
-                <button class="toolbox-btn" id="tool-text-vertical" title="Vertical Type Tool"><i data-lucide="align-vertical-justify-start"></i></button>
-            </div>
-            <div class="toolbox-divider"></div>
-            <div class="toolbox-group">
-                <button class="toolbox-btn" id="tool-gradient" title="Gradient Tool (G)"><i data-lucide="palette"></i></button>
-                <button class="toolbox-btn" id="tool-image" title="Import Image"><i data-lucide="image"></i></button>
-                <button class="toolbox-btn" id="tool-video" title="Import Video"><i data-lucide="video"></i></button>
-                <button class="toolbox-btn" id="tool-button" title="Button Element"><i data-lucide="rectangle-horizontal"></i></button>
-                <button class="toolbox-btn" id="tool-input" title="Input Field"><i data-lucide="text-cursor-input"></i></button>
-            </div>
-            <div class="toolbox-divider"></div>
-            <div class="toolbox-group">
-                <button class="toolbox-btn" id="tool-hand" title="Hand Tool (H)"><i data-lucide="hand"></i></button>
-                <button class="toolbox-btn" id="tool-zoom" title="Zoom Tool (Z)"><i data-lucide="search"></i></button>
-            </div>
-            <div class="toolbox-colors">
+            
+            <div class="toolbox-colors" style="margin-top:auto; padding-top:10px; border-top:1px solid var(--panel-border);">
                 <div class="color-swatch-wrapper" title="Set Foreground Color">
                     <input type="color" id="toolbox-fg-color" value="#ffffff">
                 </div>
@@ -487,6 +455,110 @@
                             </div>
                         </div>
 
+                        <!-- Spacing (Margin & Padding) -->
+                        <div class="control-section">
+                            <h4>Spacing (Margin & Padding)</h4>
+                            <div class="control-grid">
+                                <div class="control-item"><label>Margin Top</label><input type="number" id="prop-mt"></div>
+                                <div class="control-item"><label>Margin Bottom</label><input type="number" id="prop-mb"></div>
+                            </div>
+                            <div class="control-grid">
+                                <div class="control-item"><label>Margin Left</label><input type="number" id="prop-ml"></div>
+                                <div class="control-item"><label>Margin Right</label><input type="number" id="prop-mr"></div>
+                            </div>
+                            <div class="control-grid" style="margin-top:8px;">
+                                <div class="control-item"><label>Padding Top</label><input type="number" id="prop-pt"></div>
+                                <div class="control-item"><label>Padding Bottom</label><input type="number" id="prop-pb"></div>
+                            </div>
+                            <div class="control-grid">
+                                <div class="control-item"><label>Padding Left</label><input type="number" id="prop-pl"></div>
+                                <div class="control-item"><label>Padding Right</label><input type="number" id="prop-pr"></div>
+                            </div>
+                        </div>
+
+                        <!-- Layout & Flexbox -->
+                        <div class="control-section">
+                            <h4>Layout & Flexbox</h4>
+                            <div class="control-item">
+                                <label>Display</label>
+                                <select id="prop-display">
+                                    <option value="block">Block</option>
+                                    <option value="inline-block">Inline Block</option>
+                                    <option value="flex">Flex</option>
+                                    <option value="grid">Grid</option>
+                                    <option value="none">None</option>
+                                </select>
+                            </div>
+                            <div id="flexbox-controls" class="hidden">
+                                <div class="control-grid">
+                                    <div class="control-item">
+                                        <label>Direction</label>
+                                        <select id="prop-flex-direction">
+                                            <option value="row">Row</option>
+                                            <option value="column">Column</option>
+                                        </select>
+                                    </div>
+                                    <div class="control-item">
+                                        <label>Wrap</label>
+                                        <select id="prop-flex-wrap">
+                                            <option value="nowrap">No Wrap</option>
+                                            <option value="wrap">Wrap</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="control-item" style="margin-top:8px;">
+                                    <label>Justify Content</label>
+                                    <select id="prop-justify-content">
+                                        <option value="flex-start">Flex Start</option>
+                                        <option value="center">Center</option>
+                                        <option value="flex-end">Flex End</option>
+                                        <option value="space-between">Space Between</option>
+                                        <option value="space-around">Space Around</option>
+                                    </select>
+                                </div>
+                                <div class="control-item" style="margin-top:8px;">
+                                    <label>Align Items</label>
+                                    <select id="prop-align-items">
+                                        <option value="stretch">Stretch</option>
+                                        <option value="flex-start">Flex Start</option>
+                                        <option value="center">Center</option>
+                                        <option value="flex-end">Flex End</option>
+                                    </select>
+                                </div>
+                                <div class="control-item" style="margin-top:8px;">
+                                    <label>Gap (px)</label>
+                                    <input type="number" id="prop-gap" min="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Position -->
+                        <div class="control-section">
+                            <h4>Positioning</h4>
+                            <div class="control-item">
+                                <label>Position</label>
+                                <select id="prop-position">
+                                    <option value="static">Static</option>
+                                    <option value="relative">Relative</option>
+                                    <option value="absolute">Absolute</option>
+                                    <option value="fixed">Fixed</option>
+                                    <option value="sticky">Sticky</option>
+                                </select>
+                            </div>
+                            <div class="control-grid" style="margin-top:8px;">
+                                <div class="control-item"><label>Top</label><input type="text" id="prop-top" placeholder="auto"></div>
+                                <div class="control-item"><label>Bottom</label><input type="text" id="prop-bottom" placeholder="auto"></div>
+                            </div>
+                            <div class="control-grid">
+                                <div class="control-item"><label>Left</label><input type="text" id="prop-left" placeholder="auto"></div>
+                                <div class="control-item"><label>Right</label><input type="text" id="prop-right" placeholder="auto"></div>
+                            </div>
+                            <div class="control-item" style="margin-top:8px;">
+                                <label>Z-Index</label>
+                                <input type="number" id="prop-z-index">
+                            </div>
+                        </div>
+
                         <!-- Transforms (Rotate, Scale, Skew) -->
                         <div class="control-section">
                             <h4>Transforms (3D & 2D)</h4>
@@ -496,7 +568,7 @@
                             </div>
                             <div class="control-grid">
                                 <div class="control-item">
-                                    <label>Scale</label>
+                                    <label>Scale X</label>
                                     <input type="number" id="prop-scale" value="1" step="0.1" min="0.1" max="5">
                                 </div>
                                 <div class="control-item">
@@ -519,9 +591,127 @@
                                     <input type="number" id="prop-filter-brightness" value="100" min="0">
                                 </div>
                             </div>
+                            <div class="control-grid" style="margin-top:8px;">
+                                <div class="control-item"><label>Contrast (%)</label><input type="number" id="prop-filter-contrast" value="100" min="0"></div>
+                                <div class="control-item"><label>Saturate (%)</label><input type="number" id="prop-filter-saturate" value="100" min="0"></div>
+                            </div>
+                            <div class="control-grid" style="margin-top:8px;">
+                                <div class="control-item"><label>Grayscale (%)</label><input type="number" id="prop-filter-grayscale" value="0" min="0" max="100"></div>
+                                <div class="control-item"><label>Hue Rotate (deg)</label><input type="number" id="prop-filter-hue-rotate" value="0"></div>
+                            </div>
                             <div class="control-item" style="margin-top: 10px;">
                                 <label>Backdrop Blur (px) <small>(Glassmorphic)</small></label>
                                 <input type="number" id="prop-backdrop-blur" value="0" min="0">
+                            </div>
+                            <div class="control-item" style="margin-top: 8px;">
+                                <label>Backdrop Brightness (%)</label>
+                                <input type="number" id="prop-backdrop-brightness" value="100" min="0">
+                            </div>
+                        </div>
+
+                        <!-- Text Effects -->
+                        <div class="control-section" id="section-text-effects">
+                            <h4>Text Advanced</h4>
+                            <div class="control-grid">
+                                <div class="control-item"><label>Letter Spacing</label><input type="text" id="prop-letter-spacing" placeholder="normal"></div>
+                                <div class="control-item"><label>Line Height</label><input type="text" id="prop-line-height" placeholder="normal"></div>
+                            </div>
+                            <div class="control-grid" style="margin-top:8px;">
+                                <div class="control-item">
+                                    <label>Transform</label>
+                                    <select id="prop-text-transform">
+                                        <option value="none">None</option>
+                                        <option value="uppercase">Uppercase</option>
+                                        <option value="lowercase">Lowercase</option>
+                                        <option value="capitalize">Capitalize</option>
+                                    </select>
+                                </div>
+                                <div class="control-item">
+                                    <label>Decoration</label>
+                                    <select id="prop-text-decoration">
+                                        <option value="none">None</option>
+                                        <option value="underline">Underline</option>
+                                        <option value="line-through">Line-Through</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Advanced CSS -->
+                        <div class="control-section">
+                            <h4>Advanced CSS</h4>
+                            <div class="control-grid">
+                                <div class="control-item">
+                                    <label>Opacity (0-1)</label>
+                                    <input type="number" id="prop-opacity" value="1" step="0.05" min="0" max="1">
+                                </div>
+                                <div class="control-item">
+                                    <label>Mix Blend Mode</label>
+                                    <select id="prop-mix-blend-mode">
+                                        <option value="normal">Normal</option>
+                                        <option value="multiply">Multiply</option>
+                                        <option value="screen">Screen</option>
+                                        <option value="overlay">Overlay</option>
+                                        <option value="darken">Darken</option>
+                                        <option value="lighten">Lighten</option>
+                                        <option value="color-dodge">Color Dodge</option>
+                                        <option value="color-burn">Color Burn</option>
+                                        <option value="difference">Difference</option>
+                                        <option value="exclusion">Exclusion</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="control-grid" style="margin-top:8px;">
+                                <div class="control-item">
+                                    <label>Cursor</label>
+                                    <select id="prop-cursor">
+                                        <option value="auto">Auto</option>
+                                        <option value="default">Default</option>
+                                        <option value="pointer">Pointer</option>
+                                        <option value="text">Text</option>
+                                        <option value="move">Move</option>
+                                        <option value="not-allowed">Not Allowed</option>
+                                        <option value="crosshair">Crosshair</option>
+                                    </select>
+                                </div>
+                                <div class="control-item">
+                                    <label>Pointer Events</label>
+                                    <select id="prop-pointer-events">
+                                        <option value="auto">Auto</option>
+                                        <option value="none">None</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="control-item" style="margin-top:8px;">
+                                <label>Overflow</label>
+                                <select id="prop-overflow">
+                                    <option value="visible">Visible</option>
+                                    <option value="hidden">Hidden</option>
+                                    <option value="scroll">Scroll</option>
+                                    <option value="auto">Auto</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Transitions -->
+                        <div class="control-section">
+                            <h4>Transitions</h4>
+                            <div class="control-item">
+                                <label>Transition Property</label>
+                                <input type="text" id="prop-transition-property" placeholder="all" value="all">
+                            </div>
+                            <div class="control-grid" style="margin-top:8px;">
+                                <div class="control-item"><label>Duration (s)</label><input type="number" id="prop-transition-duration" value="0.3" step="0.1" min="0"></div>
+                                <div class="control-item">
+                                    <label>Easing</label>
+                                    <select id="prop-transition-timing">
+                                        <option value="ease">Ease</option>
+                                        <option value="linear">Linear</option>
+                                        <option value="ease-in">Ease In</option>
+                                        <option value="ease-out">Ease Out</option>
+                                        <option value="ease-in-out">Ease In Out</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -999,5 +1189,7 @@
     <script src="js/generators.js?v=2"></script>
     <script src="js/export.js?v=2"></script>
     <script src="js/app.js?v=2"></script>
+    <!-- Core Modular Tools System -->
+    <script type="module" src="js/core/initTools.js?v=3"></script>
 </body>
 </html>
