@@ -337,20 +337,26 @@ No Markdown wrappers (no \`\`\`json). No explanation.`;
             fetchHeaders["Authorization"] = `Bearer ${apiKey}`;
         }
 
+        const bodyPayload = {
+            model: model,
+            messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: `Decode: ${userPrompt}` }
+            ],
+            temperature: 0.2
+        };
+
         const response = await fetch(fetchUrl, {
             method: "POST",
             headers: fetchHeaders,
-            body: JSON.stringify({
-                model: model,
-                messages: [
-                    { role: "system", content: systemPrompt },
-                    { role: "user", content: `Decode: ${userPrompt}` }
-                ],
-                temperature: 0.2
-            })
+            body: JSON.stringify(apiKey ? bodyPayload : { uid: window.firebaseService?.user?.uid, payload: bodyPayload })
         });
 
         if (!response.ok) {
+            if (response.status === 429) {
+                const data = await response.json();
+                throw new Error(data?.error?.message || "Free limit exhausted. Please enter your own API key.");
+            }
             const data = await response.json();
             throw new Error(`OpenRouter Error: ${data?.error?.message || response.status}`);
         }
@@ -430,24 +436,30 @@ No Explanation. Output ONLY valid JSON.`;
             ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`
             : `/api/gemini`;
             
+        const bodyPayload = {
+            contents: [{
+                parts: [{
+                    text: `${systemPrompt}\n\nDecode: ${userPrompt}`
+                }]
+            }],
+            generationConfig: {
+                responseMimeType: "application/json"
+            }
+        };
+
         const response = await fetch(fetchUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: `${systemPrompt}\n\nDecode: ${userPrompt}`
-                    }]
-                }],
-                generationConfig: {
-                    responseMimeType: "application/json"
-                }
-            })
+            body: JSON.stringify(apiKey ? bodyPayload : { uid: window.firebaseService?.user?.uid, payload: bodyPayload })
         });
 
         if (!response.ok) {
+            if (response.status === 429) {
+                const data = await response.json();
+                throw new Error(data?.error?.message || "Free limit exhausted. Please enter your own API key.");
+            }
             const data = await response.json();
             throw new Error(`Gemini Refiner Error: ${data?.error?.message || response.status}`);
         }
@@ -500,9 +512,18 @@ ${tokens.refinedBlueprint}
 
 Output ONLY the raw complete HTML. No markdown, no explanation, no code fences.`;
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-            const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt }] }], generationConfig: { maxOutputTokens: 8192 } }) });
-            if (!response.ok) { const d = await response.json(); throw new Error(`Gemini Error: ${d?.error?.message || response.status}`); }
+            const url = apiKey ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}` : `/api/gemini`;
+            const bodyPayload = { contents: [{ parts: [{ text: systemPrompt }] }], generationConfig: { maxOutputTokens: 8192 } };
+            const response = await fetch(url, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify(apiKey ? bodyPayload : { uid: window.firebaseService?.user?.uid, payload: bodyPayload }) 
+            });
+            if (!response.ok) { 
+                const d = await response.json(); 
+                if (response.status === 429) throw new Error(d?.error?.message || "Free limit exhausted. Please enter your own API key.");
+                throw new Error(`Gemini Error: ${d?.error?.message || response.status}`); 
+            }
             const data = await response.json();
             let html = data.candidates[0].content.parts[0].text.trim();
             if (html.startsWith('```')) html = html.replace(/```html|```/g, '').trim();
@@ -575,21 +596,27 @@ Asset dimensions: width 320-400px, height auto. Compact, self-contained.`;
             ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`
             : `/api/gemini`;
         
+        const bodyPayload = {
+            contents: [{
+                parts: [{
+                    text: `${systemPrompt}\n\nBuild this layout component: ${tokens.refinedBlueprint}`
+                }]
+            }]
+        };
+        
         const response = await fetch(fetchUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: `${systemPrompt}\n\nBuild this layout component: ${tokens.refinedBlueprint}`
-                    }]
-                }]
-            })
+            body: JSON.stringify(apiKey ? bodyPayload : { uid: window.firebaseService?.user?.uid, payload: bodyPayload })
         });
 
         if (!response.ok) {
+            if (response.status === 429) {
+                const data = await response.json();
+                throw new Error(data?.error?.message || "Free limit exhausted. Please enter your own API key.");
+            }
             const data = await response.json();
             throw new Error(`Gemini Error: ${data?.error?.message || response.status}`);
         }
