@@ -221,8 +221,10 @@ class FirebaseService {
                     await this.auth.signInWithPopup(provider);
                     this.modalAuth.classList.add('hidden');
                 } catch (err) {
-                    if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/unauthorized-domain') {
+                    if (err.code === 'auth/unauthorized-domain') {
                         this.showAuthError("Vercel domain not authorized! Go to Firebase Console -> Authentication -> Settings -> Authorized Domains and add: designcraft-css.vercel.app");
+                    } else if (err.code === 'auth/popup-closed-by-user') {
+                        this.showAuthError("Sign in was cancelled (pop-up closed).");
                     } else {
                         this.showAuthError(err.message);
                     }
