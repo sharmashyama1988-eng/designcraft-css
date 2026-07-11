@@ -535,7 +535,6 @@ Output ONLY the raw complete HTML. No markdown, no explanation, no code fences.`
         const systemPrompt = `You are a master UI/UX software architect.
 Generate HTML and CSS for a component using the design system configuration provided.
 
-${modeDimensionPrompt}
 ${animationDirective}
 
 105 DESIGN UTILITY TOOLS AND CLASSES (YOUR AI TOOLBOX):

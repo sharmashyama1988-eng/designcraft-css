@@ -43,40 +43,6 @@
 
         <div class="navbar-tools">
             <div class="tool-group">
-                <button class="nav-btn" id="tool-select" title="Select Element (V)" data-active="true">
-                    <i data-lucide="mouse-pointer"></i>
-                </button>
-                <button class="nav-btn" id="tool-text" title="Add Text (T)">
-                    <i data-lucide="type"></i>
-                </button>
-                <div class="dropdown-wrapper">
-                    <button class="nav-btn dropdown-trigger" id="tool-shape" title="Add Shape">
-                        <i data-lucide="shapes"></i>
-                        <i data-lucide="chevron-down" class="chevron"></i>
-                    </button>
-                    <div class="dropdown-content">
-                        <button class="shape-option" data-shape="rectangle">
-                            <i data-lucide="square"></i> Rectangle
-                        </button>
-                        <button class="shape-option" data-shape="circle">
-                            <i data-lucide="circle"></i> Circle
-                        </button>
-                        <button class="shape-option" data-shape="triangle">
-                            <i data-lucide="triangle"></i> Triangle
-                        </button>
-                        <button class="shape-option" data-shape="star">
-                            <i data-lucide="star"></i> Star Shape
-                        </button>
-                        <button class="shape-option" data-shape="blob">
-                            <i data-lucide="sparkles"></i> Organic Blob
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="tool-group">
                 <button class="nav-btn" id="action-undo" title="Undo (Ctrl+Z)">
                     <i data-lucide="undo-2"></i>
                 </button>
@@ -115,6 +81,23 @@
                 <button class="nav-btn" id="order-to-back" title="Send to Back">
                     <i data-lucide="chevrons-down"></i>
                 </button>
+                <button class="nav-btn" id="action-group" title="Group Elements (Ctrl+G)">
+                    <i data-lucide="group"></i>
+                </button>
+                <button class="nav-btn" id="action-ungroup" title="Ungroup Elements (Ctrl+Shift+G)">
+                    <i data-lucide="ungroup"></i>
+                </button>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="tool-group align-group">
+                <button class="nav-btn" id="align-left" title="Align Left"><i data-lucide="align-left"></i></button>
+                <button class="nav-btn" id="align-center" title="Align Center"><i data-lucide="align-center"></i></button>
+                <button class="nav-btn" id="align-right" title="Align Right"><i data-lucide="align-right"></i></button>
+                <button class="nav-btn" id="align-top" title="Align Top"><i data-lucide="align-vertical-space-around"></i></button>
+                <button class="nav-btn" id="align-middle" title="Align Middle"><i data-lucide="align-vertical-justify-center"></i></button>
+                <button class="nav-btn" id="align-bottom" title="Align Bottom"><i data-lucide="align-vertical-space-between"></i></button>
             </div>
         </div>
 
@@ -156,6 +139,57 @@
 
     <!-- Main Workspace -->
     <main class="workspace-container">
+        <!-- Sidebar Toolbox (Photoshop Style) -->
+        <aside class="sidebar-toolbox">
+            <div class="toolbox-group">
+                <button class="toolbox-btn active" id="tool-select" title="Move Tool (V)"><i data-lucide="mouse-pointer-2"></i></button>
+                <button class="toolbox-btn" id="tool-direct-select" title="Direct Selection Tool (A)"><i data-lucide="mouse-pointer"></i></button>
+            </div>
+            <div class="toolbox-divider"></div>
+            <div class="toolbox-group">
+                <button class="toolbox-btn" id="tool-rectangle" title="Rectangle Tool (M)"><i data-lucide="square"></i></button>
+                <button class="toolbox-btn" id="tool-ellipse" title="Ellipse Tool (O)"><i data-lucide="circle"></i></button>
+                <button class="toolbox-btn" id="tool-polygon" title="Polygon Tool"><i data-lucide="hexagon"></i></button>
+                <button class="toolbox-btn" id="tool-line" title="Line Tool (L)"><i data-lucide="minus"></i></button>
+            </div>
+            <div class="toolbox-divider"></div>
+            <div class="toolbox-group">
+                <button class="toolbox-btn" id="tool-pen" title="Pen Tool (P)"><i data-lucide="pen-tool"></i></button>
+                <button class="toolbox-btn" id="tool-pencil" title="Pencil Tool (N)"><i data-lucide="pencil"></i></button>
+                <button class="toolbox-btn" id="tool-brush" title="Brush Tool (B)"><i data-lucide="paintbrush"></i></button>
+                <button class="toolbox-btn" id="tool-eraser" title="Eraser Tool (E)"><i data-lucide="eraser"></i></button>
+            </div>
+            <div class="toolbox-divider"></div>
+            <div class="toolbox-group">
+                <button class="toolbox-btn" id="tool-text" title="Horizontal Type Tool (T)"><i data-lucide="type"></i></button>
+                <button class="toolbox-btn" id="tool-text-vertical" title="Vertical Type Tool"><i data-lucide="align-vertical-justify-start"></i></button>
+            </div>
+            <div class="toolbox-divider"></div>
+            <div class="toolbox-group">
+                <button class="toolbox-btn" id="tool-gradient" title="Gradient Tool (G)"><i data-lucide="palette"></i></button>
+                <button class="toolbox-btn" id="tool-image" title="Import Image"><i data-lucide="image"></i></button>
+                <button class="toolbox-btn" id="tool-video" title="Import Video"><i data-lucide="video"></i></button>
+                <button class="toolbox-btn" id="tool-button" title="Button Element"><i data-lucide="rectangle-horizontal"></i></button>
+                <button class="toolbox-btn" id="tool-input" title="Input Field"><i data-lucide="text-cursor-input"></i></button>
+            </div>
+            <div class="toolbox-divider"></div>
+            <div class="toolbox-group">
+                <button class="toolbox-btn" id="tool-hand" title="Hand Tool (H)"><i data-lucide="hand"></i></button>
+                <button class="toolbox-btn" id="tool-zoom" title="Zoom Tool (Z)"><i data-lucide="search"></i></button>
+            </div>
+            <div class="toolbox-colors">
+                <div class="color-swatch-wrapper" title="Set Foreground Color">
+                    <input type="color" id="toolbox-fg-color" value="#ffffff">
+                </div>
+                <div class="color-swatch-wrapper bg" title="Set Background Color">
+                    <input type="color" id="toolbox-bg-color" value="#000000">
+                </div>
+                <button class="swap-colors-btn" id="toolbox-swap-colors" title="Swap Colors (X)"><i data-lucide="arrow-left-right"></i></button>
+            </div>
+            <input type="file" id="image-upload-input" accept="image/*" style="display: none;">
+            <input type="file" id="video-upload-input" accept="video/*" style="display: none;">
+        </aside>
+
         <!-- Sidebar Left (AI Assistant & Property Inspector) -->
         <aside class="sidebar-left">
             <div class="sidebar-tabs">
