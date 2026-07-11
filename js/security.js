@@ -20,9 +20,9 @@ class SecurityEngine {
             "script-src 'self' 'unsafe-inline' https://unpkg.com https://www.gstatic.com https://apis.google.com",
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
             "font-src https://fonts.gstatic.com",
-            "connect-src 'self' https://generativelanguage.googleapis.com https://openrouter.ai https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com",
+            "connect-src 'self' https://generativelanguage.googleapis.com https://openrouter.ai https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://unpkg.com https://www.gstatic.com",
             "img-src 'self' data: blob: https:",
-            "frame-src 'self' blob:"
+            "frame-src 'self' blob: https://*.firebaseapp.com"
         ].join('; ');
         document.head.prepend(meta);
     }

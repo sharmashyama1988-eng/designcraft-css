@@ -108,7 +108,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 6. Web Audio Soundscape Manager
     let audioCtx = null;
+    let userHasInteracted = false;
+    document.addEventListener('click', () => userHasInteracted = true, { once: true, capture: true });
+    document.addEventListener('keydown', () => userHasInteracted = true, { once: true, capture: true });
+
     function playUISound(type) {
+        if (!userHasInteracted) return;
         try {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();

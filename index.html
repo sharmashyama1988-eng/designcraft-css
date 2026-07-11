@@ -178,18 +178,18 @@
                     <!-- API Key Configuration (Collapsible) -->
                     <details class="api-details">
                         <summary>AI Models & API Configuration</summary>
-                        <div class="api-key-box">
+                        <form class="api-key-box" onsubmit="return false">
                             <label for="api-key">OpenRouter API Key</label>
-                            <input type="password" id="api-key" value="" placeholder="sk-or-v1-... (OpenRouter API Key)">
+                            <input type="password" id="api-key" value="" placeholder="sk-or-v1-... (OpenRouter API Key)" autocomplete="off">
                             <label for="gemini-key">Gemini API Key</label>
-                            <input type="password" id="gemini-key" value="" placeholder="AIza... (Gemini API Key)">
+                            <input type="password" id="gemini-key" value="" placeholder="AIza... (Gemini API Key)" autocomplete="off">
                             <label for="ai-model">Refiner Model (OpenRouter)</label>
                             <select id="ai-model">
                                 <option value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B (Recommended)</option>
                                 <option value="google/gemini-2.5-flash">Gemini 2.5 Flash</option>
                                 <option value="deepseek/deepseek-chat">DeepSeek V3</option>
                             </select>
-                        </div>
+                        </form>
                     </details>
 
                     <!-- Prompt Area -->
@@ -823,11 +823,11 @@
                 <form id="auth-form" onsubmit="return false;">
                     <div class="control-item" style="margin-bottom: 12px;">
                         <label for="auth-email">Email Address</label>
-                        <input type="email" id="auth-email" required placeholder="name@example.com" style="width: 100%;">
+                        <input type="email" id="auth-email" required placeholder="name@example.com" style="width: 100%;" autocomplete="username">
                     </div>
                     <div class="control-item" style="margin-bottom: 12px;">
                         <label for="auth-password">Password</label>
-                        <input type="password" id="auth-password" required placeholder="Min 6 characters" style="width: 100%;">
+                        <input type="password" id="auth-password" required placeholder="Min 6 characters" style="width: 100%;" autocomplete="current-password">
                     </div>
                     <button class="btn btn-primary btn-full" id="btn-auth-submit" style="margin-top: 15px;">
                         <i data-lucide="log-in"></i> Sign In
