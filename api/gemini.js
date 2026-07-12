@@ -1,156 +1,148 @@
 const { Redis } = require('ioredis');
 
-// Redis with fail-fast options
 const redis = process.env.REDIS_URL ? new Redis(process.env.REDIS_URL, {
   maxRetriesPerRequest: 1,
   enableOfflineQueue: false,
   connectTimeout: 2000
 }) : null;
 
-const DAILY_LIMIT = 50;
+const DAILY_LIMIT = 100;
 
-// ── Key Pool Strategy ──
-// PRIMARY: GEMINI_API_KEY (main key, always tried first)
-// PARALLEL: GEMINI_API_KEY_1 + GEMINI_API_KEY_2 (race each other for fastest response)
-// FALLBACK: GEMINI_API_KEY_3, GEMINI_API_KEY_4, GEMINI_API_KEY_5 (sequential if parallel fails)
+// ── Model fallback chain (different models = different quota buckets) ──
+const MODELS = [
+  'gemini-2.0-flash',
+  'gemini-2.0-flash-lite',
+  'gemini-2.5-flash',
+  'gemini-1.5-flash-latest',
+  'gemini-pro',
+];
 
-function getKeyGroups() {
-  const primary = process.env.GEMINI_API_KEY || null;
-  const parallel = [
-    process.env.GEMINI_API_KEY_1,
-    process.env.GEMINI_API_KEY_2,
-  ].filter(Boolean);
-  const fallbacks = [
-    process.env.GEMINI_API_KEY_3,
-    process.env.GEMINI_API_KEY_4,
-    process.env.GEMINI_API_KEY_5,
-  ].filter(Boolean);
-  return { primary, parallel, fallbacks };
+function getKeyPool() {
+  const keys = [];
+  if (process.env.GEMINI_API_KEY)   keys.push({ key: process.env.GEMINI_API_KEY,   role: 'primary' });
+  if (process.env.GEMINI_API_KEY_1) keys.push({ key: process.env.GEMINI_API_KEY_1, role: 'parallel-1' });
+  if (process.env.GEMINI_API_KEY_2) keys.push({ key: process.env.GEMINI_API_KEY_2, role: 'parallel-2' });
+  if (process.env.GEMINI_API_KEY_3) keys.push({ key: process.env.GEMINI_API_KEY_3, role: 'fallback-1' });
+  if (process.env.GEMINI_API_KEY_4) keys.push({ key: process.env.GEMINI_API_KEY_4, role: 'fallback-2' });
+  if (process.env.GEMINI_API_KEY_5) keys.push({ key: process.env.GEMINI_API_KEY_5, role: 'fallback-3' });
+  return keys;
 }
 
-// Single Gemini fetch - throws on quota/error, resolves on success
-async function fetchGemini(apiKey, payload) {
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    }
-  );
-
-  if (response.status === 429 || response.status === 503) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(`QUOTA:${err?.error?.message || 'Quota exceeded'}`);
+function isQuotaError(status, body) {
+  if (status === 429 || status === 503) return true;
+  if (status === 400) {
+    const msg = (body?.error?.message || '').toLowerCase();
+    return msg.includes('quota') || msg.includes('limit') || msg.includes('free_tier') || msg.includes('exhausted');
   }
-
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(err?.error?.message || `HTTP ${response.status}`);
-  }
-
-  return response.json();
+  return false;
 }
 
-// Race two keys in parallel - first success wins, quota errors are ignored
-async function raceParallel(keys, payload) {
-  if (!keys.length) throw new Error('NO_PARALLEL_KEYS');
-
-  return new Promise((resolve, reject) => {
-    let settled = false;
-    let errors = 0;
-
-    keys.forEach(key => {
-      fetchGemini(key, payload)
-        .then(data => {
-          if (!settled) {
-            settled = true;
-            resolve(data);
-          }
-        })
-        .catch(err => {
-          errors++;
-          if (errors === keys.length && !settled) {
-            reject(new Error('All parallel keys exhausted'));
-          }
-        });
-    });
+// Try one key + one model — returns data or throws QUOTA: / HARD: error
+async function tryOnce(apiKey, model, payload) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
   });
+
+  if (response.ok) return response.json();
+
+  const body = await response.json().catch(() => ({}));
+  if (isQuotaError(response.status, body)) {
+    throw new Error(`QUOTA:${model}:${body?.error?.message || response.status}`);
+  }
+  // Model not found → try next model
+  if (response.status === 404 || (body?.error?.message || '').includes('not found')) {
+    throw new Error(`MODEL_NOT_FOUND:${model}`);
+  }
+  throw new Error(`HARD:${body?.error?.message || `HTTP ${response.status}`}`);
 }
 
-// Full 3-tier execution: Primary → Parallel Race → Sequential Fallbacks
-async function callGeminiSmartPool(payload) {
-  const { primary, parallel, fallbacks } = getKeyGroups();
+// PRIMARY + PARALLEL RACE with automatic model+key fallback
+async function smartCall(payload) {
+  const pool = getKeyPool();
+  if (!pool.length) throw new Error('No Gemini API keys configured.');
 
-  // TIER 1: Try primary key first
-  if (primary) {
+  const primary   = pool[0];
+  const parallel  = pool.slice(1, 3);   // KEY_1 + KEY_2 race each other
+  const fallbacks = pool.slice(3);       // KEY_3, KEY_4, KEY_5 sequential
+
+  // TIER 1 — primary key, try each model in order
+  for (const model of MODELS) {
     try {
-      return await fetchGemini(primary, payload);
+      const data = await tryOnce(primary.key, model, payload);
+      console.log(`[Gemini] ✓ Primary key OK with model ${model}`);
+      return data;
     } catch (err) {
-      if (!err.message.startsWith('QUOTA:')) throw err; // Hard error, don't retry
-      console.warn('[Gemini] Primary key quota hit, racing parallel keys...');
+      if (err.message.startsWith('HARD:')) throw new Error(err.message.replace('HARD:', ''));
+      // QUOTA or MODEL_NOT_FOUND → try next model
+      console.warn(`[Gemini] Primary ${model}: ${err.message}`);
     }
   }
 
-  // TIER 2: Race parallel keys (fastest wins)
-  if (parallel.length > 0) {
+  // TIER 2 — race parallel keys, try each model
+  for (const model of MODELS) {
+    if (!parallel.length) break;
     try {
-      const result = await raceParallel(parallel, payload);
+      const result = await Promise.any(
+        parallel.map(({ key }) =>
+          tryOnce(key, model, payload).catch(e => {
+            if (e.message.startsWith('HARD:')) throw e;
+            return Promise.reject(e); // re-reject quota/model errors
+          })
+        )
+      );
+      console.log(`[Gemini] ✓ Parallel race OK with model ${model}`);
       return result;
     } catch (err) {
-      console.warn('[Gemini] All parallel keys exhausted, trying fallbacks...');
+      // AggregateError means all parallel keys failed
+      console.warn(`[Gemini] Parallel race failed for ${model}`);
     }
   }
 
-  // TIER 3: Sequential fallbacks
-  let lastError = null;
-  for (const key of fallbacks) {
-    try {
-      return await fetchGemini(key, payload);
-    } catch (err) {
-      lastError = err;
-      if (!err.message.startsWith('QUOTA:')) throw err; // Hard error
-      console.warn(`[Gemini] Fallback key quota hit, trying next...`);
+  // TIER 3 — sequential fallback keys, try each model
+  for (const { key, role } of fallbacks) {
+    for (const model of MODELS) {
+      try {
+        const data = await tryOnce(key, model, payload);
+        console.log(`[Gemini] ✓ Fallback ${role} OK with model ${model}`);
+        return data;
+      } catch (err) {
+        if (err.message.startsWith('HARD:')) throw new Error(err.message.replace('HARD:', ''));
+        console.warn(`[Gemini] Fallback ${role} ${model}: ${err.message}`);
+      }
     }
   }
 
-  throw new Error(lastError?.message?.replace('QUOTA:', '') || 'All Gemini API keys exhausted for today.');
+  throw new Error('All Gemini API keys and models exhausted. Please try again in a minute.');
 }
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { primary, parallel, fallbacks } = getKeyGroups();
-  if (!primary && !parallel.length && !fallbacks.length) {
-    return res.status(500).json({ error: 'No Gemini API keys configured in environment.' });
-  }
+  const pool = getKeyPool();
+  if (!pool.length) return res.status(500).json({ error: 'No Gemini API keys configured.' });
 
-  // Rate limiting via Redis
   const { uid, payload } = req.body;
+
+  // Rate limiting
   if (uid && redis) {
     try {
-      const dateStr = new Date().toISOString().split('T')[0];
-      const redisKey = `usage:gemini:${uid}:${dateStr}`;
-      const currentUsage = await redis.incr(redisKey);
-      if (currentUsage === 1) await redis.expire(redisKey, 86400);
-      if (currentUsage > DAILY_LIMIT) {
-        return res.status(429).json({
-          error: { message: 'Daily free limit reached. Come back tomorrow or add your own API key.' }
-        });
+      const key = `usage:gemini:${uid}:${new Date().toISOString().split('T')[0]}`;
+      const usage = await redis.incr(key);
+      if (usage === 1) await redis.expire(key, 86400);
+      if (usage > DAILY_LIMIT) {
+        return res.status(429).json({ error: { message: 'Daily limit reached. Come back tomorrow!' } });
       }
-    } catch (err) {
-      console.error('[Redis] Rate limit check failed, continuing:', err.message);
-    }
+    } catch (e) { /* Redis down - continue */ }
   }
 
-  const geminiPayload = payload || req.body;
-
   try {
-    const data = await callGeminiSmartPool(geminiPayload);
+    const data = await smartCall(payload || req.body);
     return res.status(200).json(data);
-  } catch (error) {
-    return res.status(500).json({ error: { message: error.message } });
+  } catch (err) {
+    console.error('[Gemini] All tiers exhausted:', err.message);
+    return res.status(500).json({ error: { message: err.message } });
   }
 }
