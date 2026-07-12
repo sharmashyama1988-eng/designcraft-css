@@ -223,40 +223,13 @@ class AIService {
             }
 
         } catch (err) {
-            console.error("Pipeline failure:", err);
+            console.error('Pipeline failure:', err);
             this.removeShimmer();
 
-            // Offline templates fallback when API limits are hit!
-            const promptLower = prompt.toLowerCase();
-            let matchedTrend = 'minimalDark';
-            let matchedType = 'card';
-            
-            if (promptLower.includes('glass')) matchedTrend = 'glassmorphism';
-            else if (promptLower.includes('cyber') || promptLower.includes('neon')) matchedTrend = 'cyberpunk';
-            else if (promptLower.includes('brutal') || promptLower.includes('comic')) matchedTrend = 'neoBrutalism';
-            
-            if (generationMode === 'landing' || promptLower.includes('page') || promptLower.includes('landing') || promptLower.includes('site') || promptLower.includes('dashboard')) {
-                matchedType = 'landing';
-            }
-
-            const dbTrend = window.FIGMA_DESIGN_DATABASE?.trends?.[matchedTrend];
-            const blueprint = dbTrend?.blueprints?.[matchedType];
-
-            if (blueprint) {
-                this.showStatus("Quota Limit Hit. Loaded offline template fallback!", false);
-                const mockTokens = {
-                    designTrend: matchedTrend === 'neoBrutalism' ? 'neo-brutalism' : (matchedTrend === 'minimalDark' ? 'minimal-dark' : matchedTrend),
-                    hue: matchedTrend === 'cyberpunk' ? 180 : (matchedTrend === 'neoBrutalism' ? 45 : 220),
-                    bgL: matchedTrend === 'cyberpunk' ? 0 : (matchedTrend === 'minimalDark' ? 6 : (matchedTrend === 'glassmorphism' ? 10 : 94)),
-                    textL: matchedTrend === 'minimalDark' || matchedTrend === 'cyberpunk' ? 95 : 12,
-                    animation: 'none'
-                };
-                
-                // Inject the local fallback
-                this.injectAndVerifyComponent({ html: blueprint.html, css: blueprint.css }, mockTokens);
-            } else {
-                this.showStatus(`API Limit Hit: ${err.message}`, false);
-            }
+            // Show the REAL error to the user - no silent fallback
+            const msg = err.message || 'Unknown error';
+            this.showStatus(`❌ AI Error: ${msg}`, false);
+            setTimeout(() => this.statusBox?.classList.add('hidden'), 6000);
         }
     }
 
@@ -441,10 +414,8 @@ No Explanation. Output ONLY valid JSON.`;
                 parts: [{
                     text: `${systemPrompt}\n\nDecode: ${userPrompt}`
                 }]
-            }],
-            generationConfig: {
-                responseMimeType: "application/json"
-            }
+            }]
+            // Note: NO responseMimeType - it causes failures on many Gemini versions
         };
 
         const response = await fetch(fetchUrl, {
@@ -465,13 +436,13 @@ No Explanation. Output ONLY valid JSON.`;
         }
 
         const data = await response.json();
-        let reply = data.candidates[0].content.parts[0].text.trim();
-        
-        if (reply.startsWith("```")) {
-            reply = reply.replace(/```json|```/g, "").trim();
-        }
+        let reply = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
 
-        return JSON.parse(reply);
+        // Bullet-proof JSON extraction: strip markdown, find first {...}
+        if (reply.startsWith('```')) reply = reply.replace(/```json|```/g, '').trim();
+        const jsonMatch = reply.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) throw new Error(`Gemini returned non-JSON: ${reply.slice(0, 120)}`);
+        return JSON.parse(jsonMatch[0]);
     }
 
     // Step 2: Gemini Code Generator
