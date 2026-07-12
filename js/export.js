@@ -205,9 +205,33 @@ class ExportService {
 
     copyToClipboard(element, label) {
         const text = element.innerText;
-        navigator.clipboard.writeText(text).then(() => {
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert(`${label} successfully copied to clipboard!`);
+            }).catch(err => {
+                this.fallbackCopyTextToClipboard(text, label);
+            });
+        } else {
+            this.fallbackCopyTextToClipboard(text, label);
+        }
+    }
+
+    fallbackCopyTextToClipboard(text, label) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
             alert(`${label} successfully copied to clipboard!`);
-        });
+        } catch (err) {
+            alert(`Failed to copy ${label}. Please select and copy manually.`);
+        }
+        document.body.removeChild(textArea);
     }
 
     downloadSingleHtml() {
@@ -221,6 +245,10 @@ class ExportService {
     }
 
     async downloadZipArchive() {
+        if (typeof JSZip === 'undefined') {
+            alert("JSZip library failed to load (network issue or blocked by browser). Please use Download HTML instead.");
+            return;
+        }
         const zipName = window.firebaseService.activeProjectName || 'designcraft-project';
         const zip = new JSZip();
         

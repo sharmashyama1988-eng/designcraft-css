@@ -2,9 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DesignCraft CSS - Canva-style CSS Maker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DesignCraft - Advanced AI-Powered CSS UI Builder</title>
+    <meta name="description" content="DesignCraft is a next-generation, AI-powered CSS UI builder and web design tool. Create stunning glassmorphism, cyberpunk, and neo-brutalist layouts instantly.">
+    
+    <!-- Open Graph / Social Tags -->
+    <meta property="og:title" content="DesignCraft - Advanced CSS UI Builder">
+    <meta property="og:description" content="Build stunning, modern web interfaces visually with AI-powered CSS generation.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://designcraft.app/og-preview.jpg">
+    <meta property="og:url" content="https://designcraft.app">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="DesignCraft - CSS UI Builder">
+    <meta name="twitter:description" content="AI-powered visual editor for elite web design.">
+    
     <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
     <link rel="icon" type="image/png" href="assets/logodark.png">
     <link rel="apple-touch-icon" href="assets/logodark.png">
     <!-- Google Fonts -->
@@ -1107,11 +1122,11 @@
 
                 <div class="auth-toggle-option" style="text-align: center; margin-top: 15px; font-size: 13px;">
                     <span id="auth-toggle-text">Don't have an account?</span> 
-                    <a href="#" id="auth-toggle-link" style="color: var(--accent-color); font-weight: 600; text-decoration: none;">Sign Up</a>
+                    <a href="javascript:void(0)" id="auth-toggle-link" style="color: var(--accent-color); font-weight: 600; text-decoration: none;">Sign Up</a>
                 </div>
             </div>
             <div class="modal-footer" style="background: rgba(0,0,0,0.1); justify-content: space-between; align-items: center;">
-                <a href="#" id="btn-auth-local" style="font-size:12px; color:var(--text-muted); text-decoration:none;">Skip & Use Offline Mode</a>
+                <a href="javascript:void(0)" id="btn-auth-local" style="font-size:12px; color:var(--text-muted); text-decoration:none;" onclick="document.getElementById('modal-auth').classList.add('hidden')">Skip & Use Offline Mode</a>
                 <button class="btn btn-secondary" id="btn-auth-settings" title="Configure custom Firebase instance">
                     <i data-lucide="settings"></i> Config Firebase
                 </button>
