@@ -129,6 +129,9 @@
                     <button class="profile-dropdown-item" id="btn-open-firebase-config">
                         <i data-lucide="settings"></i> Firebase Setup
                     </button>
+                    <button class="profile-dropdown-item" id="btn-mcp-connect">
+                        <i data-lucide="plug"></i> MCP Connect
+                    </button>
                     <button class="profile-dropdown-item logout" id="btn-logout">
                         <i data-lucide="log-out"></i> Log Out
                     </button>
@@ -139,24 +142,51 @@
 
     <!-- Main Workspace -->
     <main class="workspace-container">
-        <!-- Sidebar Toolbox (Photoshop Style) -->
-        <aside class="sidebar-toolbox">
-            <div id="dynamic-tools-container" style="display:flex; flex-direction:column; align-items:center; width:100%; overflow-y:auto; overflow-x:hidden; padding-bottom: 20px;">
-                <!-- 100+ Tools will be dynamically injected here by initTools.js -->
-            </div>
-            
-            <div class="toolbox-colors" style="margin-top:auto; padding-top:10px; border-top:1px solid var(--panel-border);">
-                <div class="color-swatch-wrapper" title="Set Foreground Color">
-                    <input type="color" id="toolbox-fg-color" value="#ffffff">
-                </div>
-                <div class="color-swatch-wrapper bg" title="Set Background Color">
-                    <input type="color" id="toolbox-bg-color" value="#000000">
-                </div>
-                <button class="swap-colors-btn" id="toolbox-swap-colors" title="Swap Colors (X)"><i data-lucide="arrow-left-right"></i></button>
-            </div>
-            <input type="file" id="image-upload-input" accept="image/*" style="display: none;">
-            <input type="file" id="video-upload-input" accept="video/*" style="display: none;">
-        </aside>
+        <!-- Minimal Tool Sidebar -->
+        <div class="tool-sidebar" id="tool-sidebar">
+          <button class="tool-btn active" id="tb-select" title="Select">
+            <i data-lucide="mouse-pointer-2"></i>
+            <span class="tool-tooltip">Select</span>
+          </button>
+          <button class="tool-btn" id="tb-text" title="Text">
+            <i data-lucide="type"></i>
+            <span class="tool-tooltip">Text</span>
+          </button>
+          <div class="tool-divider"></div>
+          <button class="tool-btn" id="tb-rect" title="Rectangle">
+            <i data-lucide="square"></i>
+            <span class="tool-tooltip">Rectangle</span>
+          </button>
+          <button class="tool-btn" id="tb-circle" title="Circle">
+            <i data-lucide="circle"></i>
+            <span class="tool-tooltip">Circle</span>
+          </button>
+          <button class="tool-btn" id="tb-triangle" title="Triangle">
+            <i data-lucide="triangle"></i>
+            <span class="tool-tooltip">Triangle</span>
+          </button>
+          <button class="tool-btn" id="tb-star" title="Star">
+            <i data-lucide="star"></i>
+            <span class="tool-tooltip">Star</span>
+          </button>
+          <button class="tool-btn" id="tb-line" title="Line">
+            <i data-lucide="minus"></i>
+            <span class="tool-tooltip">Line</span>
+          </button>
+          <div class="tool-divider"></div>
+          <button class="tool-btn" id="tb-image" title="Image">
+            <i data-lucide="image"></i>
+            <span class="tool-tooltip">Image</span>
+          </button>
+          <div class="tool-divider"></div>
+          <button class="tool-btn tool-btn-ai" id="tb-ai" title="AI Generate">
+            <i data-lucide="wand-2"></i>
+            <span class="tool-tooltip">AI Generate</span>
+          </button>
+        </div>
+        <!-- Hidden file inputs preserved for image upload -->
+        <input type="file" id="image-upload-input" accept="image/*" style="display: none;">
+        <input type="file" id="video-upload-input" accept="video/*" style="display: none;">
 
         <!-- Sidebar Left (AI Assistant & Property Inspector) -->
         <aside class="sidebar-left">
@@ -1164,6 +1194,25 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- MCP Connect Modal -->
+    <div class="modal-overlay hidden" id="modal-mcp">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3><i data-lucide="plug"></i> Remote MCP Access</h3>
+          <button class="modal-close" id="modal-mcp-close"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+          <p style="color:var(--text-muted);margin-bottom:16px;font-size:13px;">Use DesignCraft remotely via Model Context Protocol. Connect any MCP-compatible AI client to control this canvas.</p>
+          <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:6px;">YOUR MCP ENDPOINT</label>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="mcp-endpoint-url" readonly style="flex:1;padding:8px 12px;border-radius:8px;border:1px solid var(--border-color);background:var(--input-bg);color:var(--text-primary);font-size:12px;font-family:monospace;" value="" />
+            <button class="btn btn-primary" id="mcp-copy-btn" style="padding:8px 14px;"><i data-lucide="copy"></i></button>
+          </div>
+          <p style="font-size:11px;color:var(--text-muted);margin-top:12px;">Capabilities: generate_component · apply_preset · export_css</p>
+        </div>
+      </div>
     </div>
 
     <!-- Firebase App/Auth/Firestore CDNs -->

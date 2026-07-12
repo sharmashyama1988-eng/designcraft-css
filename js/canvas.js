@@ -124,6 +124,13 @@ class CanvasEditor {
             el.style.clipPath = 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)';
         } else if (shapeType === 'blob') {
             el.style.borderRadius = '60% 40% 30% 70% / 60% 30% 70% 40%';
+        } else if (shapeType === 'rectangle') {
+            // Plain rectangle — no clip, no special radius. borderRadius left at default 0.
+            el.style.borderRadius = '4px';
+        } else if (shapeType === 'line') {
+            el.style.width = '200px';
+            el.style.height = '3px';
+            el.style.borderRadius = '0';
         }
         
         this.artboard.appendChild(el);
@@ -219,12 +226,6 @@ class CanvasEditor {
 
     // Handles mousedown on Canvas elements & handles
     handleMouseDown(e) {
-        if (window.toolManager && window.toolManager.activeTool) {
-            window.toolManager.handlePointerDown(e);
-            return;
-        }
-
-        // --- FALLBACK (Old logic) ---
         // If clicking on resize handles
         if (e.target.classList.contains('resize-handle')) {
             e.stopPropagation();
@@ -265,12 +266,6 @@ class CanvasEditor {
 
     // Handles dragging & resizing movements
     handleMouseMove(e) {
-        if (window.toolManager && window.toolManager.activeTool) {
-            window.toolManager.handlePointerMove(e);
-            return;
-        }
-
-        // --- FALLBACK (Old logic) ---
         if (!this.selectedElement) return;
         
         const deltaX = (e.clientX - this.startX) / this.zoomLevel;
@@ -341,12 +336,6 @@ class CanvasEditor {
     }
 
     handleMouseUp() {
-        if (window.toolManager && window.toolManager.activeTool) {
-            window.toolManager.handlePointerUp({});
-            return;
-        }
-
-        // --- FALLBACK (Old logic) ---
         if (this.isDragging || this.isResizing) {
             this.isDragging = false;
             this.isResizing = false;

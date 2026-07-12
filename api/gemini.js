@@ -8,19 +8,80 @@ const redis = process.env.REDIS_URL ? new Redis(process.env.REDIS_URL, {
 }) : null;
 
 // Daily limit per user
-const DAILY_LIMIT = 20;
+const DAILY_LIMIT = 50;
+
+// Multi-key rotation pool - reads from environment variables
+// Add GEMINI_API_KEY_1 through GEMINI_API_KEY_5 in Vercel dashboard
+function getApiKeyPool() {
+  const keys = [];
+  // Primary key
+  if (process.env.GEMINI_API_KEY) keys.push(process.env.GEMINI_API_KEY);
+  // Additional rotation keys (add these in Vercel env vars)
+  for (let i = 1; i <= 5; i++) {
+    const k = process.env[`GEMINI_API_KEY_${i}`];
+    if (k) keys.push(k);
+  }
+  return keys;
+}
+
+// Round-robin key selection based on minute to spread load
+function selectApiKey(keys) {
+  if (!keys.length) return null;
+  const idx = Math.floor(Date.now() / 60000) % keys.length;
+  return keys[idx];
+}
+
+// Attempt Gemini call with automatic key fallback on 429/quota error
+async function callGeminiWithFallback(payload) {
+  const keys = getApiKeyPool();
+  if (!keys.length) throw new Error('No Gemini API keys configured.');
+
+  // Try each key in order until one succeeds
+  let lastError = null;
+  for (const key of keys) {
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }
+      );
+
+      if (response.status === 429 || response.status === 503) {
+        // Quota exceeded or overloaded - try next key
+        lastError = await response.json();
+        continue;
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData?.error?.message || `Gemini HTTP ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (err) {
+      lastError = err;
+      // Network error - try next key
+      continue;
+    }
+  }
+
+  throw new Error(lastError?.error?.message || lastError?.message || 'All Gemini API keys exhausted.');
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    return res.status(500).json({ error: 'GEMINI_API_KEY environment variable is not set.' });
+  const keys = getApiKeyPool();
+  if (!keys.length) {
+    return res.status(500).json({ error: 'No GEMINI_API_KEY environment variable is set.' });
   }
 
-  // Extract uid (we'll send this from frontend) and actual payload
+  // Extract uid and actual payload
   const { uid, payload } = req.body;
 
   if (uid && redis) {
@@ -37,40 +98,22 @@ export default async function handler(req, res) {
       if (currentUsage > DAILY_LIMIT) {
         return res.status(429).json({ 
           error: {
-            message: 'Free limit exhausted for today. Please enter your own API key in the settings to continue generating.'
+            message: 'Daily free limit reached. Please add your own API key in Settings to continue.'
           }
         });
       }
     } catch (err) {
       console.error('Redis error:', err);
-      // If Redis fails, continue gracefully
+      // Continue gracefully if Redis is down
     }
   }
 
-  // Fallback if frontend sends direct structure instead of wrapping in {uid, payload} 
-  // (for backward compatibility if something breaks)
   const geminiPayload = payload || req.body;
 
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(geminiPayload)
-      }
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      return res.status(response.status).json(errorData);
-    }
-
-    const data = await response.json();
+    const data = await callGeminiWithFallback(geminiPayload);
     return res.status(200).json(data);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: { message: error.message } });
   }
 }

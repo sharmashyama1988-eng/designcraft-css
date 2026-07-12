@@ -2130,3 +2130,106 @@ input:checked + .slider-round:before {
     font-size: 11px;
     font-weight: 700;
 }
+
+/* ========== MINIMAL TOOL SIDEBAR ========== */
+.tool-sidebar {
+  position: fixed;
+  left: 0;
+  top: 56px;
+  width: 52px;
+  height: calc(100vh - 56px);
+  background: var(--panel-bg);
+  border-right: 1px solid var(--panel-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 0;
+  z-index: 90;
+  overflow: hidden;
+}
+
+.tool-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  position: relative;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.tool-btn svg {
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+.tool-btn:hover {
+  background: rgba(99, 102, 241, 0.12);
+  color: var(--accent-color);
+}
+
+.tool-btn.active {
+  background: var(--accent-color);
+  color: #fff;
+}
+
+.tool-btn-ai.active {
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+}
+
+.tool-divider {
+  width: 28px;
+  height: 1px;
+  background: var(--panel-border);
+  margin: 4px 0;
+  flex-shrink: 0;
+}
+
+.tool-tooltip {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-4px);
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  color: var(--text-primary);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.15s ease;
+  z-index: 200;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.tool-btn:hover .tool-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Offset main content to not be hidden under the tool sidebar */
+.workspace-container,
+.canvas-area,
+.workspace,
+.main-content,
+#canvas-wrapper,
+.editor-body,
+.sidebar-left {
+  margin-left: 52px !important;
+}
+
+/* ========== MCP MODAL ========== */
+#modal-mcp .modal-card {
+  max-width: 480px;
+  width: 90%;
+}

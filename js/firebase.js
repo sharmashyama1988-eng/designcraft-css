@@ -121,6 +121,10 @@ class FirebaseService {
             this.profileName.innerText = name;
             this.profileEmail.innerText = user.email;
             this.avatarInitials.innerText = name.substring(0, 2).toUpperCase();
+
+            // Inject MCP endpoint URL for this user
+            const mcpInput = document.getElementById('mcp-endpoint-url');
+            if (mcpInput) mcpInput.value = `https://designcraft-css.vercel.app/api/mcp?token=${user.uid}`;
         } else {
             // Logged out or Local mode
             this.profileBadge.classList.add('hidden');
@@ -275,6 +279,23 @@ class FirebaseService {
             this.initializeFirebase(config);
             this.modalConfig.classList.add('hidden');
             alert("Firebase configuration saved and connected successfully!");
+        });
+
+        // MCP Modal wiring
+        document.getElementById('btn-mcp-connect')?.addEventListener('click', () => {
+            document.getElementById('modal-mcp')?.classList.remove('hidden');
+        });
+        document.getElementById('modal-mcp-close')?.addEventListener('click', () => {
+            document.getElementById('modal-mcp')?.classList.add('hidden');
+        });
+        document.getElementById('mcp-copy-btn')?.addEventListener('click', () => {
+            const url = document.getElementById('mcp-endpoint-url')?.value;
+            if (url) navigator.clipboard.writeText(url).then(() => {
+                const btn = document.getElementById('mcp-copy-btn');
+                if (btn) btn.innerHTML = '<i data-lucide="check"></i>';
+                lucide.createIcons();
+                setTimeout(() => { if (btn) btn.innerHTML = '<i data-lucide="copy"></i>'; lucide.createIcons(); }, 2000);
+            });
         });
     }
 

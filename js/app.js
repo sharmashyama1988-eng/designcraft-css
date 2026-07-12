@@ -242,4 +242,57 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => { target.removeAttribute('data-hover-sound-played'); }, 300);
         }
     });
+
+    // === MINIMAL TOOLBAR BINDINGS ===
+    const setToolActive = (id) => {
+        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+        const btn = document.getElementById(id);
+        if (btn) btn.classList.add('active');
+    };
+
+    document.getElementById('tb-select')?.addEventListener('click', () => {
+        setToolActive('tb-select');
+    });
+
+    document.getElementById('tb-text')?.addEventListener('click', () => {
+        setToolActive('tb-text');
+        window.canvasEditor?.addText();
+    });
+
+    document.getElementById('tb-rect')?.addEventListener('click', () => {
+        setToolActive('tb-rect');
+        window.canvasEditor?.addShape('rectangle');
+    });
+
+    document.getElementById('tb-circle')?.addEventListener('click', () => {
+        setToolActive('tb-circle');
+        window.canvasEditor?.addShape('circle');
+    });
+
+    document.getElementById('tb-triangle')?.addEventListener('click', () => {
+        setToolActive('tb-triangle');
+        window.canvasEditor?.addShape('triangle');
+    });
+
+    document.getElementById('tb-star')?.addEventListener('click', () => {
+        setToolActive('tb-star');
+        window.canvasEditor?.addShape('star');
+    });
+
+    document.getElementById('tb-line')?.addEventListener('click', () => {
+        setToolActive('tb-line');
+        window.canvasEditor?.addShape('line');
+    });
+
+    document.getElementById('tb-image')?.addEventListener('click', () => {
+        setToolActive('tb-image');
+        document.getElementById('image-upload-input')?.click();
+    });
+
+    document.getElementById('tb-ai')?.addEventListener('click', () => {
+        setToolActive('tb-ai');
+        // Open AI panel tab in the left sidebar
+        const aiTab = document.querySelector('[data-tab="ai-panel"]') || document.querySelector('.tab-btn[data-tab="ai-panel"]');
+        if (aiTab) aiTab.click();
+    });
 });
