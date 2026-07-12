@@ -117,9 +117,7 @@ class AIService {
 
         const prompt = this.promptTextarea.value.trim();
         const orKey = this.openRouterKeyInput.value.trim();
-        // Use empty string to force server-side route (Vercel env key pool)
-        const geminiKey = (this.geminiKeyInput.value.trim() === 'server-side') ? '' : this.geminiKeyInput.value.trim();
-        const orModel = this.modelSelect.value;
+        const orModel = this.modelSelect.value || 'meta-llama/llama-3.3-70b-instruct:free';
 
         if (!prompt) { this.showStatus('Please type a design command first!', false); return; }
 
@@ -132,16 +130,12 @@ class AIService {
                 this.showStatus(`🛡️ ${check.reason}`, false);
                 return;
             }
-            // Show usage counter in status
             const { used, limit } = check.quotaCheck;
             this.showStatus(`Security OK · ${used + 1}/${limit} uses today`, true);
         }
 
-        // Silent routing check: use Gemini if OpenRouter key is empty
-        let refinerMode = 'gemini';
-        if (orKey && orModel && !orModel.includes("gemini")) {
-            refinerMode = 'openrouter';
-        }
+        // Always use OpenRouter (server-side keys) — Gemini keys removed
+        const refinerMode = 'openrouter';
 
         const modeBtn = document.querySelector('.creation-mode-btn.active');
         const generationMode = modeBtn ? modeBtn.dataset.mode : 'landing';
@@ -300,49 +294,41 @@ Output ONLY a raw JSON string in this schema:
 }
 No Markdown wrappers (no \`\`\`json). No explanation.`;
 
-        const fetchUrl = apiKey ? "https://openrouter.ai/api/v1/chat/completions" : "/api/openrouter";
-        const fetchHeaders = {
-            "Content-Type": "application/json",
-            "HTTP-Referer": window.location.origin,
-            "X-Title": "DesignCraft CSS Maker"
-        };
+        const fetchUrl = apiKey ? 'https://openrouter.ai/api/v1/chat/completions' : '/api/openrouter';
+        const fetchHeaders = { 'Content-Type': 'application/json' };
         if (apiKey) {
-            fetchHeaders["Authorization"] = `Bearer ${apiKey}`;
+            fetchHeaders['Authorization'] = `Bearer ${apiKey}`;
+            fetchHeaders['HTTP-Referer'] = window.location.origin;
+            fetchHeaders['X-Title'] = 'DesignCraft CSS';
         }
 
-        const bodyPayload = {
-            model: model,
-            messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: `Decode: ${userPrompt}` }
-            ],
-            temperature: 0.2
-        };
+        const messages = [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: `Decode: ${userPrompt}` }
+        ];
+
+        // Server-side: send {uid, messages} — backend extracts and uses its key pool
+        const bodyPayload = apiKey
+            ? { model, messages, temperature: 0.2 }
+            : { uid: window.firebaseService?.user?.uid || null, messages, max_tokens: 1024 };
 
         const response = await fetch(fetchUrl, {
-            method: "POST",
+            method: 'POST',
             headers: fetchHeaders,
-            body: JSON.stringify(apiKey ? bodyPayload : { uid: window.firebaseService?.user?.uid, payload: bodyPayload })
+            body: JSON.stringify(bodyPayload)
         });
 
         if (!response.ok) {
-            if (response.status === 429) {
-                const data = await response.json();
-                throw new Error(data?.error?.message || "Free limit exhausted. Please enter your own API key.");
-            }
-            const data = await response.json();
-            throw new Error(`OpenRouter Error: ${data?.error?.message || response.status}`);
+            const d = await response.json().catch(() => ({}));
+            throw new Error(`OpenRouter Error: ${d?.error?.message || response.status}`);
         }
 
         const data = await response.json();
-        let reply = data.choices[0].message.content.trim();
-        
-        // Clean JSON strings if model wrapped in markdown
-        if (reply.startsWith("```")) {
-            reply = reply.replace(/```json|```/g, "").trim();
-        }
-
-        return JSON.parse(reply);
+        let reply = (data.choices?.[0]?.message?.content || '').trim();
+        if (reply.startsWith('```')) reply = reply.replace(/```json|```/g, '').trim();
+        const jm = reply.match(/\{[\s\S]*\}/);
+        if (!jm) throw new Error(`Bad JSON from AI: ${reply.slice(0, 100)}`);
+        return JSON.parse(jm[0]);
     }
 
     // Step 1b: Gemini-based Prompt Refiner (Fallback/Direct)
@@ -483,20 +469,17 @@ ${tokens.refinedBlueprint}
 
 Output ONLY the raw complete HTML. No markdown, no explanation, no code fences.`;
 
-            const url = apiKey ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}` : `/api/gemini`;
-            const bodyPayload = { contents: [{ parts: [{ text: systemPrompt }] }], generationConfig: { maxOutputTokens: 8192 } };
-            const response = await fetch(url, { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify(apiKey ? bodyPayload : { uid: window.firebaseService?.user?.uid, payload: bodyPayload }) 
-            });
-            if (!response.ok) { 
-                const d = await response.json(); 
-                if (response.status === 429) throw new Error(d?.error?.message || "Free limit exhausted. Please enter your own API key.");
-                throw new Error(`Gemini Error: ${d?.error?.message || response.status}`); 
+            // Route to OpenRouter server-side (4-key pool, free models)
+            const orUrl = '/api/openrouter';
+            const orMessages = [{ role: 'user', content: systemPrompt }];
+            const orBody = { uid: window.firebaseService?.user?.uid || null, messages: orMessages, max_tokens: 8192 };
+            const response = await fetch(orUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orBody) });
+            if (!response.ok) {
+                const d = await response.json().catch(() => ({}));
+                throw new Error(`AI Error: ${d?.error?.message || response.status}`);
             }
             const data = await response.json();
-            let html = data.candidates[0].content.parts[0].text.trim();
+            let html = (data.choices?.[0]?.message?.content || '').trim();
             if (html.startsWith('```')) html = html.replace(/```html|```/g, '').trim();
             if (window.securityEngine) html = window.securityEngine.sanitizeOutput(html);
             if (window.securityEngine) window.securityEngine.incrementDailyUsage();
@@ -562,43 +545,29 @@ Output ONLY a raw JSON string in this exact format:
 Do not write anything else.
 Asset dimensions: width 320-400px, height auto. Compact, self-contained.`;
 
-        const fetchUrl = apiKey 
-            ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`
-            : `/api/gemini`;
-        
-        const bodyPayload = {
-            contents: [{
-                parts: [{
-                    text: `${systemPrompt}\n\nBuild this layout component: ${tokens.refinedBlueprint}`
-                }]
-            }]
-        };
-        
-        const response = await fetch(fetchUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(apiKey ? bodyPayload : { uid: window.firebaseService?.user?.uid, payload: bodyPayload })
+        // Route asset generation to OpenRouter
+        const orMessages = [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: `Build this layout component: ${tokens.refinedBlueprint}` }
+        ];
+        const orBody = { uid: window.firebaseService?.user?.uid || null, messages: orMessages, max_tokens: 4096 };
+        const response = await fetch('/api/openrouter', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orBody)
         });
 
         if (!response.ok) {
-            if (response.status === 429) {
-                const data = await response.json();
-                throw new Error(data?.error?.message || "Free limit exhausted. Please enter your own API key.");
-            }
-            const data = await response.json();
-            throw new Error(`Gemini Error: ${data?.error?.message || response.status}`);
+            const d = await response.json().catch(() => ({}));
+            throw new Error(`AI Error: ${d?.error?.message || response.status}`);
         }
 
         const data = await response.json();
-        let reply = data.candidates[0].content.parts[0].text.trim();
-        
-        if (reply.startsWith("```")) {
-            reply = reply.replace(/```json|```/g, "").trim();
-        }
-
-        return JSON.parse(reply);
+        let reply = (data.choices?.[0]?.message?.content || '').trim();
+        if (reply.startsWith('```')) reply = reply.replace(/```json|```/g, '').trim();
+        const jm = reply.match(/\{[\s\S]*\}/);
+        if (!jm) throw new Error(`AI returned non-JSON: ${reply.slice(0, 100)}`);
+        return JSON.parse(jm[0]);
     }
 
     // Step 3: Inject, calculate Contrast Guards, and display

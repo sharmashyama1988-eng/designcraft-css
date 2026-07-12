@@ -1,110 +1,151 @@
 const { Redis } = require('ioredis');
 
-// Connect to Redis using environment variable with fail-fast options
 const redis = process.env.REDIS_URL ? new Redis(process.env.REDIS_URL, {
   maxRetriesPerRequest: 1,
   enableOfflineQueue: false,
   connectTimeout: 2000
 }) : null;
 
-// Daily limit per user
-const DAILY_LIMIT = 50;
+const DAILY_LIMIT = 200;
 
-// Multi-key rotation pool for OpenRouter
-function getApiKeyPool() {
-  const keys = [];
-  if (process.env.OPENROUTER_API_KEY) keys.push(process.env.OPENROUTER_API_KEY);
-  for (let i = 1; i <= 3; i++) {
-    const k = process.env[`OPENROUTER_API_KEY_${i}`];
-    if (k) keys.push(k);
-  }
-  return keys;
+// Free models on OpenRouter — no billing needed
+const FREE_MODELS = [
+  'meta-llama/llama-3.3-70b-instruct:free',
+  'google/gemini-2.0-flash-exp:free',
+  'deepseek/deepseek-r1:free',
+  'microsoft/phi-4:free',
+  'qwen/qwen3-8b:free',
+];
+
+function getKeyPool() {
+  return [
+    process.env.OPENROUTER_API_KEY,
+    process.env.OPENROUTER_API_KEY_1,
+    process.env.OPENROUTER_API_KEY_2,
+    process.env.OPENROUTER_API_KEY_3,
+  ].filter(Boolean);
 }
 
-// Attempt OpenRouter call with automatic key fallback on 429
-async function callOpenRouterWithFallback(payload) {
-  const keys = getApiKeyPool();
+function isQuotaError(status, body) {
+  if (status === 429 || status === 503) return true;
+  const msg = (body?.error?.message || '').toLowerCase();
+  return msg.includes('quota') || msg.includes('rate limit') || msg.includes('credit');
+}
+
+async function tryOnce(apiKey, model, messages, maxTokens = 4096) {
+  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'HTTP-Referer': 'https://designcraft-css.vercel.app',
+      'X-Title': 'DesignCraft CSS',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ model, messages, max_tokens: maxTokens })
+  });
+
+  if (response.ok) return response.json();
+
+  const body = await response.json().catch(() => ({}));
+  if (isQuotaError(response.status, body)) {
+    throw new Error(`QUOTA:${model}:${body?.error?.message || response.status}`);
+  }
+  if (response.status === 404 || (body?.error?.message || '').includes('not found')) {
+    throw new Error(`MODEL_NOT_FOUND:${model}`);
+  }
+  throw new Error(`HARD:${body?.error?.message || `HTTP ${response.status}`}`);
+}
+
+// Smart pool: PRIMARY → PARALLEL RACE → SEQUENTIAL FALLBACKS, across all free models
+async function smartCall(messages, maxTokens) {
+  const keys = getKeyPool();
   if (!keys.length) throw new Error('No OpenRouter API keys configured.');
 
-  let lastError = null;
-  for (const key of keys) {
+  const [primary, ...rest] = keys;
+  const parallel  = rest.slice(0, 2);
+  const fallbacks = rest.slice(2);
+
+  // TIER 1 — primary key, try models in order
+  for (const model of FREE_MODELS) {
     try {
-      const response = await fetch(
-        'https://openrouter.ai/api/v1/chat/completions',
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${key}`,
-            'HTTP-Referer': 'https://designcraft-css.vercel.app',
-            'X-Title': 'DesignCraft CSS',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        }
-      );
-
-      if (response.status === 429 || response.status === 503) {
-        lastError = await response.json();
-        continue; // Try next key
-      }
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData?.error?.message || `OpenRouter HTTP ${response.status}`);
-      }
-
-      return await response.json();
+      const data = await tryOnce(primary, model, messages, maxTokens);
+      console.log(`[OR] ✓ Primary OK → ${model}`);
+      return data;
     } catch (err) {
-      lastError = err;
-      continue;
+      if (err.message.startsWith('HARD:')) throw new Error(err.message.replace('HARD:', ''));
+      console.warn(`[OR] Primary ${model}: ${err.message}`);
     }
   }
 
-  throw new Error(lastError?.error?.message || lastError?.message || 'All OpenRouter API keys exhausted.');
+  // TIER 2 — parallel race (fastest wins)
+  for (const model of FREE_MODELS) {
+    if (!parallel.length) break;
+    try {
+      const result = await Promise.any(
+        parallel.map(key =>
+          tryOnce(key, model, messages, maxTokens).catch(e => {
+            if (e.message.startsWith('HARD:')) throw e;
+            return Promise.reject(e);
+          })
+        )
+      );
+      console.log(`[OR] ✓ Parallel race OK → ${model}`);
+      return result;
+    } catch (_) {
+      console.warn(`[OR] Parallel failed for ${model}`);
+    }
+  }
+
+  // TIER 3 — sequential fallbacks
+  for (const key of fallbacks) {
+    for (const model of FREE_MODELS) {
+      try {
+        const data = await tryOnce(key, model, messages, maxTokens);
+        console.log(`[OR] ✓ Fallback OK → ${model}`);
+        return data;
+      } catch (err) {
+        if (err.message.startsWith('HARD:')) throw new Error(err.message.replace('HARD:', ''));
+        console.warn(`[OR] Fallback ${model}: ${err.message}`);
+      }
+    }
+  }
+
+  throw new Error('All OpenRouter keys and models exhausted. Please try again in a moment.');
 }
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const keys = getApiKeyPool();
-  if (!keys.length) {
-    return res.status(500).json({ error: 'No OPENROUTER_API_KEY environment variable is set.' });
-  }
+  const keys = getKeyPool();
+  if (!keys.length) return res.status(500).json({ error: 'No OpenRouter API keys configured.' });
 
-  // Extract uid and actual payload
-  const { uid, payload } = req.body;
+  const { uid, messages, max_tokens, payload } = req.body;
 
+  // Rate limiting
   if (uid && redis) {
     try {
-      const dateStr = new Date().toISOString().split('T')[0];
-      const redisKey = `usage:openrouter:${uid}:${dateStr}`;
-      
-      const currentUsage = await redis.incr(redisKey);
-      
-      if (currentUsage === 1) {
-        await redis.expire(redisKey, 86400); // 24 hours
+      const rkey = `usage:or:${uid}:${new Date().toISOString().split('T')[0]}`;
+      const usage = await redis.incr(rkey);
+      if (usage === 1) await redis.expire(rkey, 86400);
+      if (usage > DAILY_LIMIT) {
+        return res.status(429).json({ error: { message: 'Daily limit reached. Come back tomorrow!' } });
       }
-
-      if (currentUsage > DAILY_LIMIT) {
-        return res.status(429).json({ 
-          error: {
-            message: 'Daily free limit reached. Please add your own API key in Settings to continue.'
-          }
-        });
-      }
-    } catch (err) {
-      console.error('Redis error:', err);
-    }
+    } catch (_) { /* Redis down - continue */ }
   }
 
-  const orPayload = payload || req.body;
+  // Support both direct messages array AND wrapped payload from frontend
+  const finalMessages = messages || payload?.messages;
+  const finalMaxTokens = max_tokens || payload?.max_tokens || 4096;
+
+  if (!finalMessages?.length) {
+    return res.status(400).json({ error: 'No messages provided.' });
+  }
 
   try {
-    const data = await callOpenRouterWithFallback(orPayload);
+    const data = await smartCall(finalMessages, finalMaxTokens);
     return res.status(200).json(data);
-  } catch (error) {
-    return res.status(500).json({ error: { message: error.message } });
+  } catch (err) {
+    console.error('[OR] All tiers exhausted:', err.message);
+    return res.status(500).json({ error: { message: err.message } });
   }
 }
