@@ -102,7 +102,8 @@ body {
 
 /* Navbar */
 .navbar {
-    height: 64px;
+    height: 52px;
+    min-height: 52px;
     background-color: rgba(255, 255, 255, 0.6); /* Liquid Glass */
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
@@ -110,9 +111,10 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 24px;
+    padding: 0 12px;
     z-index: 100;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
 }
 
 .navbar-brand {
@@ -615,7 +617,10 @@ body {
 
 /* Sidebars Base */
 .sidebar-left, .sidebar-right {
-    width: 320px;
+    width: 280px;
+    min-width: 220px;
+    max-width: 300px;
+    flex-shrink: 1;
     background-color: rgba(255, 255, 255, 0.6); /* Translucent */
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
@@ -624,10 +629,13 @@ body {
     flex-direction: column;
     z-index: 10;
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
+    overflow: hidden;
 }
 
 .sidebar-right {
-    width: 300px;
+    width: 260px;
+    min-width: 200px;
+    max-width: 280px;
     border-right: none;
     border-left: 1px solid rgba(0, 0, 0, 0.05);
     box-shadow: -4px 0 24px rgba(0, 0, 0, 0.02);
@@ -2135,16 +2143,16 @@ input:checked + .slider-round:before {
 .tool-sidebar {
   position: fixed;
   left: 0;
-  top: 56px;
-  width: 52px;
-  height: calc(100vh - 56px);
+  top: 52px;
+  width: 44px;
+  height: calc(100vh - 52px);
   background: var(--panel-bg);
   border-right: 1px solid var(--panel-border);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: 10px 0;
+  padding: 8px 0;
   z-index: 90;
   overflow: hidden;
 }
@@ -2218,14 +2226,9 @@ input:checked + .slider-round:before {
 }
 
 /* Offset main content to not be hidden under the tool sidebar */
-.workspace-container,
-.canvas-area,
-.workspace,
-.main-content,
-#canvas-wrapper,
-.editor-body,
-.sidebar-left {
-  margin-left: 52px !important;
+/* Only the workspace-container shifts — sidebars are inside it */
+.workspace-container {
+  margin-left: 44px !important;
 }
 
 /* ========== MCP MODAL ========== */
