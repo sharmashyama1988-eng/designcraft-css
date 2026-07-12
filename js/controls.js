@@ -799,7 +799,17 @@ class ControlsManager {
             btnApplyCss.addEventListener('click', () => {
                 if (!this.activeElement) return;
                 const css = customCssInput.value;
-                this.activeElement.style.cssText = css;
+                
+                // Parse and apply without destroying left/top/width/height layout bounds
+                const lines = css.split(';');
+                lines.forEach(line => {
+                    if (!line.includes(':')) return;
+                    const [prop, val] = line.split(':');
+                    if (prop && val) {
+                        this.activeElement.style.setProperty(prop.trim(), val.trim());
+                    }
+                });
+                
                 window.canvasEditor.triggerHistorySave();
                 this.syncInspector(this.activeElement);
                 window.canvasEditor.updateSelectionBox();

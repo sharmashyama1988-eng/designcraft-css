@@ -267,7 +267,22 @@ class CanvasEditor {
             return;
         }
         
-        // Clicked outside elements -> Deselect
+        // Alignment and Layer controls
+        const getEl = (id) => document.getElementById(id);
+        
+        getEl('order-to-front')?.addEventListener('click', () => this.reorderElement('front'));
+        getEl('order-forward')?.addEventListener('click', () => this.reorderElement('forward'));
+        getEl('order-backward')?.addEventListener('click', () => this.reorderElement('backward'));
+        getEl('order-to-back')?.addEventListener('click', () => this.reorderElement('back'));
+        
+        getEl('align-left')?.addEventListener('click', () => this.alignElement('left'));
+        getEl('align-center')?.addEventListener('click', () => this.alignElement('center'));
+        getEl('align-right')?.addEventListener('click', () => this.alignElement('right'));
+        getEl('align-top')?.addEventListener('click', () => this.alignElement('top'));
+        getEl('align-middle')?.addEventListener('click', () => this.alignElement('middle'));
+        getEl('align-bottom')?.addEventListener('click', () => this.alignElement('bottom'));
+
+        // Handle clicks outside to deselects -> Deselect
         this.deselectAll();
     }
 
@@ -665,6 +680,42 @@ class CanvasEditor {
         
         this.updateElementsCount();
         if (window.controlsManager) window.controlsManager.updateLayersList();
+    }
+
+    reorderElement(action) {
+        if (!this.selectedElement) return;
+        
+        const el = this.selectedElement;
+        const currentZ = parseInt(window.getComputedStyle(el).zIndex) || 1;
+        
+        if (action === 'front') el.style.zIndex = 999;
+        if (action === 'forward') el.style.zIndex = currentZ + 1;
+        if (action === 'backward') el.style.zIndex = Math.max(0, currentZ - 1);
+        if (action === 'back') el.style.zIndex = 0;
+        
+        this.triggerHistorySave();
+    }
+
+    alignElement(alignment) {
+        if (!this.selectedElement) return;
+        
+        const el = this.selectedElement;
+        const parentW = this.artboard.offsetWidth;
+        const parentH = this.artboard.offsetHeight;
+        const elW = el.offsetWidth;
+        const elH = el.offsetHeight;
+        
+        switch (alignment) {
+            case 'left': el.style.left = '0px'; break;
+            case 'center': el.style.left = `${(parentW - elW) / 2}px`; break;
+            case 'right': el.style.left = `${parentW - elW}px`; break;
+            case 'top': el.style.top = '0px'; break;
+            case 'middle': el.style.top = `${(parentH - elH) / 2}px`; break;
+            case 'bottom': el.style.top = `${parentH - elH}px`; break;
+        }
+        
+        this.updateSelectionBox();
+        this.triggerHistorySave();
     }
 
     triggerHistorySave() {
