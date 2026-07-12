@@ -9,7 +9,13 @@ export default class StyleTransferTool extends BaseTool {
     onPointerDown(e) {
         const prompt = window.prompt("Enter style description (e.g. 'Cyberpunk', 'Watercolor'):", "Cyberpunk");
         if (prompt) {
-            alert(`Transferring style to '${prompt}'...`);
+            
+        fetch('/api/tools', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({action: 'styleTransfer'})
+        }).then(res => res.json()).then(data => alert(data.message)).catch(err => console.error(err));
+    
         }
     }
 }

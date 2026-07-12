@@ -7,6 +7,12 @@ export default class ImgCssTool extends BaseTool {
         this.cursor = 'text';
     }
     onPointerDown(e) {
-        alert('Generating raw CSS code for this element via AI...');
+        
+        fetch('/api/tools', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({action: 'imgCss'})
+        }).then(res => res.json()).then(data => alert(data.message)).catch(err => console.error(err));
+    
     }
 }

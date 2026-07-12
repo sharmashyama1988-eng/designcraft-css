@@ -7,6 +7,12 @@ export default class UpscaleTool extends BaseTool {
         this.cursor = 'zoom-in';
     }
     onPointerDown(e) {
-        alert('Running AI Upscale model (this may take a moment)...');
+        
+        fetch('/api/tools', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({action: 'upscale'})
+        }).then(res => res.json()).then(data => alert(data.message)).catch(err => console.error(err));
+    
     }
 }

@@ -7,6 +7,12 @@ export default class ColorizeTool extends BaseTool {
         this.cursor = 'crosshair';
     }
     onPointerDown(e) {
-        alert('Applying AI Colorization...');
+        
+        fetch('/api/tools', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({action: 'colorize'})
+        }).then(res => res.json()).then(data => alert(data.message)).catch(err => console.error(err));
+    
     }
 }

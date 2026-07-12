@@ -7,6 +7,12 @@ export default class WireUiTool extends BaseTool {
         this.cursor = 'pointer';
     }
     onPointerDown(e) {
-        alert('Analyzing wireframe and generating UI...');
+        
+        fetch('/api/tools', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({action: 'wireUi'})
+        }).then(res => res.json()).then(data => alert(data.message)).catch(err => console.error(err));
+    
     }
 }

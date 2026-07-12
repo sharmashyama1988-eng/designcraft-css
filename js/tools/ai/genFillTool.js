@@ -34,7 +34,13 @@ export default class GenFillTool extends BaseTool {
             if (Math.abs(this.selectionRect.w) < 10 || Math.abs(this.selectionRect.h) < 10) return;
             const prompt = window.prompt("Enter prompt for Generative Fill:", "");
             if (!prompt) return;
-            alert(`Generating fill for: "${prompt}"...`);
+            
+        fetch('/api/tools', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({action: 'genFill'})
+        }).then(res => res.json()).then(data => alert(data.message)).catch(err => console.error(err));
+    
         } catch (error) {
             console.error("Error in generative fill:", error);
         }

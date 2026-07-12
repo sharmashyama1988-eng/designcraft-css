@@ -7,6 +7,12 @@ export default class BgRemoveTool extends BaseTool {
         this.cursor = 'pointer';
     }
     onPointerDown(e) {
-        alert('Processing background removal...');
+        
+        fetch('/api/tools', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({action: 'bgRemove'})
+        }).then(res => res.json()).then(data => alert(data.message)).catch(err => console.error(err));
+    
     }
 }
