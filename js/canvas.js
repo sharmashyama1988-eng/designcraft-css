@@ -51,6 +51,13 @@ class CanvasEditor {
         document.getElementById('order-backward')?.addEventListener('click', () => this.moveBackward());
         document.getElementById('order-to-back')?.addEventListener('click', () => this.sendToBack());
 
+        document.getElementById('align-left')?.addEventListener('click', () => this.alignElement('left'));
+        document.getElementById('align-center')?.addEventListener('click', () => this.alignElement('center'));
+        document.getElementById('align-right')?.addEventListener('click', () => this.alignElement('right'));
+        document.getElementById('align-top')?.addEventListener('click', () => this.alignElement('top'));
+        document.getElementById('align-middle')?.addEventListener('click', () => this.alignElement('middle'));
+        document.getElementById('align-bottom')?.addEventListener('click', () => this.alignElement('bottom'));
+
         // Dynamic 3D Tilt interaction delegated on the artboard
         this.artboard?.addEventListener('mousemove', (e) => {
             const tiltCheckbox = document.getElementById('ai-enable-tilt');
@@ -570,6 +577,43 @@ class CanvasEditor {
             this.triggerHistorySave();
             if (window.controlsManager) window.controlsManager.updateLayersList();
         }
+    }
+
+    alignElement(alignment) {
+        if (!this.selectedElement) return;
+
+        const el = this.selectedElement;
+        const parent = el.parentElement || this.artboard;
+        
+        const parentWidth = parent.clientWidth || parent.offsetWidth;
+        const parentHeight = parent.clientHeight || parent.offsetHeight;
+        
+        const elWidth = el.offsetWidth;
+        const elHeight = el.offsetHeight;
+        
+        switch (alignment) {
+            case 'left':
+                el.style.left = '0px';
+                break;
+            case 'center':
+                el.style.left = Math.round((parentWidth - elWidth) / 2) + 'px';
+                break;
+            case 'right':
+                el.style.left = Math.round(parentWidth - elWidth) + 'px';
+                break;
+            case 'top':
+                el.style.top = '0px';
+                break;
+            case 'middle':
+                el.style.top = Math.round((parentHeight - elHeight) / 2) + 'px';
+                break;
+            case 'bottom':
+                el.style.top = Math.round(parentHeight - elHeight) + 'px';
+                break;
+        }
+
+        this.updateSelectionBox();
+        this.triggerHistorySave();
     }
 
     // Count updates
