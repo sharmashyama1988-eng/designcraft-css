@@ -17,10 +17,10 @@ class SecurityEngine {
         meta.httpEquiv = 'Content-Security-Policy';
         meta.content = [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' https://unpkg.com https://www.gstatic.com https://apis.google.com",
+            "script-src 'self' 'unsafe-inline' https://unpkg.com https://www.gstatic.com https://apis.google.com https://cdnjs.cloudflare.com",
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
             "font-src https://fonts.gstatic.com",
-            "connect-src 'self' https://generativelanguage.googleapis.com https://openrouter.ai https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://unpkg.com https://www.gstatic.com",
+            "connect-src 'self' https://generativelanguage.googleapis.com https://openrouter.ai https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://unpkg.com https://www.gstatic.com https://cdnjs.cloudflare.com",
             "img-src 'self' data: blob: https:",
             "frame-src 'self' blob: https://*.firebaseapp.com"
         ].join('; ');

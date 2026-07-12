@@ -58,6 +58,9 @@ class CanvasEditor {
         document.getElementById('align-middle')?.addEventListener('click', () => this.alignElement('middle'));
         document.getElementById('align-bottom')?.addEventListener('click', () => this.alignElement('bottom'));
 
+        document.getElementById('action-group')?.addEventListener('click', () => this.groupElements());
+        document.getElementById('action-ungroup')?.addEventListener('click', () => this.ungroupElements());
+
         // Dynamic 3D Tilt interaction delegated on the artboard
         this.artboard?.addEventListener('mousemove', (e) => {
             const tiltCheckbox = document.getElementById('ai-enable-tilt');
@@ -267,22 +270,7 @@ class CanvasEditor {
             return;
         }
         
-        // Alignment and Layer controls
-        const getEl = (id) => document.getElementById(id);
-        
-        getEl('order-to-front')?.addEventListener('click', () => this.reorderElement('front'));
-        getEl('order-forward')?.addEventListener('click', () => this.reorderElement('forward'));
-        getEl('order-backward')?.addEventListener('click', () => this.reorderElement('backward'));
-        getEl('order-to-back')?.addEventListener('click', () => this.reorderElement('back'));
-        
-        getEl('align-left')?.addEventListener('click', () => this.alignElement('left'));
-        getEl('align-center')?.addEventListener('click', () => this.alignElement('center'));
-        getEl('align-right')?.addEventListener('click', () => this.alignElement('right'));
-        getEl('align-top')?.addEventListener('click', () => this.alignElement('top'));
-        getEl('align-middle')?.addEventListener('click', () => this.alignElement('middle'));
-        getEl('align-bottom')?.addEventListener('click', () => this.alignElement('bottom'));
-
-        // Handle clicks outside to deselects -> Deselect
+        // Clicked outside elements -> Deselect
         this.deselectAll();
     }
 
@@ -629,6 +617,75 @@ class CanvasEditor {
 
         this.updateSelectionBox();
         this.triggerHistorySave();
+    }
+
+    groupElements() {
+        if (!this.selectedElement) return;
+        // Basic grouping logic for a single element (just puts it in a wrapper)
+        // Multi-select requires shift-click logic to be fully functional
+        const el = this.selectedElement;
+        
+        // Don't group if already a group
+        if (el.classList.contains('canvas-group')) return;
+
+        const groupNode = document.createElement('div');
+        groupNode.className = 'canvas-element canvas-group';
+        groupNode.id = 'group-' + Date.now();
+        
+        // Inherit position and size
+        groupNode.style.position = 'absolute';
+        groupNode.style.left = el.style.left;
+        groupNode.style.top = el.style.top;
+        groupNode.style.width = el.style.width;
+        groupNode.style.height = el.style.height;
+        groupNode.style.zIndex = el.style.zIndex || 1;
+
+        // Reset element position to 0,0 relative to group
+        el.style.left = '0px';
+        el.style.top = '0px';
+        
+        el.parentNode.insertBefore(groupNode, el);
+        groupNode.appendChild(el);
+
+        this.selectElement(groupNode);
+        this.triggerHistorySave();
+        this.updateElementsCount();
+        if (window.controlsManager) window.controlsManager.updateLayersList();
+    }
+
+    ungroupElements() {
+        if (!this.selectedElement || !this.selectedElement.classList.contains('canvas-group')) return;
+        
+        const groupNode = this.selectedElement;
+        const children = Array.from(groupNode.children);
+        
+        const parent = groupNode.parentNode;
+        let firstChild = null;
+
+        children.forEach(child => {
+            if (child.classList.contains('canvas-element')) {
+                // Restore global coordinates
+                const gLeft = parseInt(groupNode.style.left) || 0;
+                const gTop = parseInt(groupNode.style.top) || 0;
+                const cLeft = parseInt(child.style.left) || 0;
+                const cTop = parseInt(child.style.top) || 0;
+                
+                child.style.left = `${gLeft + cLeft}px`;
+                child.style.top = `${gTop + cTop}px`;
+                child.style.zIndex = groupNode.style.zIndex;
+                
+                parent.insertBefore(child, groupNode);
+                if (!firstChild) firstChild = child;
+            }
+        });
+        
+        parent.removeChild(groupNode);
+        this.deselectAll();
+        if (firstChild) this.selectElement(firstChild);
+        
+        this.triggerHistorySave();
+        this.updateElementsCount();
+        if (window.controlsManager) window.controlsManager.updateLayersList();
     }
 
     // Count updates
