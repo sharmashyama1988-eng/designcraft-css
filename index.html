@@ -207,22 +207,10 @@
                         <p>Generate outstanding CSS elements instantly using AI.</p>
                     </div>
 
-                    <!-- API Key Configuration (Collapsible) -->
-                    <details class="api-details">
-                        <summary>AI Models & API Configuration</summary>
-                        <form class="api-key-box" onsubmit="return false">
-                            <label for="api-key">OpenRouter API Key</label>
-                            <input type="password" id="api-key" value="" placeholder="sk-or-v1-... (OpenRouter API Key)" autocomplete="off">
-                            <label for="gemini-key">Gemini API Key</label>
-                            <input type="password" id="gemini-key" value="" placeholder="AIza... (Gemini API Key)" autocomplete="off">
-                            <label for="ai-model">Refiner Model (OpenRouter)</label>
-                            <select id="ai-model">
-                                <option value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B (Recommended)</option>
-                                <option value="google/gemini-1.5-flash">Gemini 1.5 Flash</option>
-                                <option value="deepseek/deepseek-chat">DeepSeek V3</option>
-                            </select>
-                        </form>
-                    </details>
+                    <!-- API keys hidden - handled server-side via Vercel env vars -->
+                    <input type="hidden" id="api-key" value="">
+                    <input type="hidden" id="gemini-key" value="server-side">
+                    <input type="hidden" id="ai-model" value="meta-llama/llama-3.3-70b-instruct">
 
                     <!-- Prompt Area -->
                     <div class="prompt-container">

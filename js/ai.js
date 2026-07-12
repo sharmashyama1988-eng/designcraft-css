@@ -117,11 +117,11 @@ class AIService {
 
         const prompt = this.promptTextarea.value.trim();
         const orKey = this.openRouterKeyInput.value.trim();
-        const geminiKey = this.geminiKeyInput.value.trim();
+        // Use empty string to force server-side route (Vercel env key pool)
+        const geminiKey = (this.geminiKeyInput.value.trim() === 'server-side') ? '' : this.geminiKeyInput.value.trim();
         const orModel = this.modelSelect.value;
 
         if (!prompt) { this.showStatus('Please type a design command first!', false); return; }
-        if (!geminiKey) { this.showStatus('Please enter your Gemini API Key!', false); return; }
 
         // ── Security Checks ──
         const sec = window.securityEngine;
