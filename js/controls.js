@@ -790,7 +790,6 @@ class ControlsManager {
             window.canvasEditor.updateSelectionBox();
             window.canvasEditor.triggerHistorySave();
         });
-        });
 
         // Advanced Custom CSS
         const btnApplyCss = document.getElementById('btn-apply-custom-css');
