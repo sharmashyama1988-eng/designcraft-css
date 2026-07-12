@@ -286,6 +286,9 @@ class ControlsManager {
             if(input) input.value = val;
         });
 
+        const customCssInput = document.getElementById('prop-custom-css');
+        if (customCssInput) customCssInput.value = el.style.cssText.split(';').map(s => s.trim()).filter(Boolean).join(';\n') + ';';
+
         // Text Effects
         if (isText) {
             document.getElementById('section-text-effects')?.classList.remove('hidden');
@@ -787,6 +790,21 @@ class ControlsManager {
             window.canvasEditor.updateSelectionBox();
             window.canvasEditor.triggerHistorySave();
         });
+        });
+
+        // Advanced Custom CSS
+        const btnApplyCss = document.getElementById('btn-apply-custom-css');
+        const customCssInput = document.getElementById('prop-custom-css');
+        if (btnApplyCss && customCssInput) {
+            btnApplyCss.addEventListener('click', () => {
+                if (!this.activeElement) return;
+                const css = customCssInput.value;
+                this.activeElement.style.cssText = css;
+                window.canvasEditor.triggerHistorySave();
+                this.syncInspector(this.activeElement);
+                window.canvasEditor.updateSelectionBox();
+            });
+        }
 
         // Animation changes
         const animSelect = document.getElementById('prop-animation-type');

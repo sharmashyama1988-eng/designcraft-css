@@ -7,19 +7,25 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
 
     // 2. Toolbar Bindings (Insert Element Tools)
-    const btnSelect = document.getElementById('tool-select');
-    const btnText = document.getElementById('tool-text');
-    const shapeOptions = document.querySelectorAll('.shape-option');
+    const btnSelect = document.getElementById('tb-select');
+    const btnText = document.getElementById('tb-text');
+    const shapeOptions = [
+        { id: 'tb-rect', shape: 'rectangle' },
+        { id: 'tb-circle', shape: 'circle' },
+        { id: 'tb-triangle', shape: 'triangle' },
+        { id: 'tb-star', shape: 'star' },
+        { id: 'tb-line', shape: 'line' }
+    ];
     const btnClear = document.getElementById('action-clear');
     
     let activeTool = 'select'; // select, text, shape
 
     const setActiveTool = (toolName, btnEl) => {
         activeTool = toolName;
-        document.querySelectorAll('.nav-btn')?.forEach(btn => {
-            btn.removeAttribute('data-active');
+        document.querySelectorAll('.tool-btn')?.forEach(btn => {
+            btn.classList.remove('active');
         });
-        if (btnEl) btnEl.setAttribute('data-active', 'true');
+        if (btnEl) btnEl.classList.add('active');
     };
 
     if (btnSelect) {
@@ -33,18 +39,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (shapeOptions.length > 0) {
-        shapeOptions.forEach(btn => {
-            btn?.addEventListener('click', () => {
-                const shape = btn.dataset.shape;
+    shapeOptions.forEach(opt => {
+        const btn = document.getElementById(opt.id);
+        if (btn) {
+            btn.addEventListener('click', () => {
                 setActiveTool('select', btnSelect); // Keep selection active
-                window.canvasEditor.addShape(shape);
+                window.canvasEditor.addShape(opt.shape);
             });
-        });
-    }
+        }
+    });
 
     // 2.5 Image Import
-    const btnImage = document.getElementById('tool-image');
+    const btnImage = document.getElementById('tb-image');
     const imageUploadInput = document.getElementById('image-upload-input');
     if (btnImage && imageUploadInput) {
         btnImage?.addEventListener('click', () => {
